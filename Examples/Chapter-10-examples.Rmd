@@ -21,6 +21,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ENSIN: T 10.3 ja 10.4: using BtB data!
 
+
 vasta sitten:
 
 # Table 10.1: Respiratory Disorder Data

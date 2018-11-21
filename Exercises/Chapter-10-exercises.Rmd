@@ -22,6 +22,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Use the epilepsy data, modifying the related R code given in the **Examples of Chapter 10**.
 
+
 ## Exercise 10.2
 
 Use both the respiratory and epilepsy data sets, modifying the related R code given in the **Examples of Chapter 10**.
