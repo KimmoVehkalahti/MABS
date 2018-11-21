@@ -1,0 +1,335 @@
+---
+title:  |  
+  |  *Multivariate Analysis for the Behavioral Sciences,*
+  |  Second Edition (Chapman and Hall/CRC, 2019)
+  |  **Examples of Chapter 4:**
+  |  **Multiple Linear Regression**
+author: "Kimmo Vehkalahti and Brian S. Everitt"
+date: "9 October 2018"
+output: 
+  pdf_document:
+    number_sections: no
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+\pagebreak
+
+# Examples
+
+# Figure 4.1: Time Spent Looking After Car
+
+```{r, echo=TRUE}
+Gender <- c(1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0,
+         0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1)
+
+Age <- c(55, 43, 57, 26, 22, 32, 26, 29, 40, 30, 34, 44, 49, 22, 34, 47,
+         48, 48, 22, 24, 50, 49, 49, 48, 29, 58, 24, 21, 29, 45, 28, 37,
+         44, 22, 38, 24, 34, 26, 26, 25)
+
+Extroversion <- c(40, 45, 52, 62, 31, 28, 2, 83, 55, 32, 47, 45, 60, 13, 7, 85,
+           38, 61, 26, 3, 29, 60, 47, 18, 16, 36, 24, 12, 32, 46, 26, 40,
+           46, 44, 3, 25, 43, 41, 42, 36)
+
+Time <- c(46, 79, 33, 63, 20, 18, 11, 97, 63, 46, 21, 71, 59, 44, 30, 80,
+          45, 26, 33, 7, 50, 54, 73, 19, 36, 31, 71, 15, 40, 61, 45, 42,
+          57, 34, 26, 47, 42, 44, 59, 27)
+
+carwash <- as.data.frame(cbind(Gender, Age, Extroversion, Time))
+# Time, Age, Extroversion - points by Gender
+pairs(carwash[, c(4,2,3)], panel=function(x,y) text(x,y,Gender))
+```
+\pagebreak
+
+## Table 4.1
+
+```{r, echo=TRUE}
+summary(lm(Time ~ Age + Extroversion + Gender, data = carwash))
+```
+\pagebreak
+
+## Table 4.2
+
+```{r, echo=TRUE}
+summary(lm(Time ~ Extroversion + Gender, data = carwash))
+```
+\pagebreak
+
+## Figure 4.2
+
+```{r, echo=TRUE}
+#par(mfrow = c(1,1))
+gender <- rep("m", length(Gender))
+gender[Gender==0] <- "f"
+x <- seq(0, 90, length = 50)
+ym <- 15.68 + 19.18 + 0.51*x
+yf <- 15.68 + 0.51*x
+plot(Time ~ Extroversion, xlab = "Extroversion score",
+     ylab = "Time spent looking after car (mins)", type = "n")
+text(Extroversion, Time, labels = gender)
+lines(x, ym, lty = 1)
+lines(x, yf, lty = 2)
+legend("topleft", c("Male", "Female"), lty = 1:2)
+```
+\pagebreak
+
+## Table 4.3
+
+```{r, echo=TRUE}
+summary(lm(Time ~ Extroversion + Gender + Extroversion:Gender, data = carwash))
+```
+\pagebreak
+
+## Figure 4.3
+
+```{r, echo=TRUE}
+gender <- rep("m", length(Gender))
+gender[Gender==0] <- "f"
+x <- seq(0, 90, length = 50)
+ym <- 20 + 7.82 + (0.36+0.31)*x
+yf <- 20 + 0.36*x
+plot(Time ~ Extroversion, xlab = "Extroversion score",
+     ylab = "Time spent looking after car (mins)", type = "n")
+text(Extroversion, Time, labels = gender)
+lines(x, ym, lty = 1)
+lines(x, yf, lty = 2)
+legend("topleft", c("Male", "Female"), lty = 1:2)
+```
+\pagebreak
+
+# Table 4.4: Course Evaluation Data
+
+```{r, echo=TRUE}
+Overall <- c(3.4, 2.9, 2.6, 3.8, 3.0, 2.5, 3.9, 4.3, 3.8, 3.4,
+             2.8, 2.9, 4.1, 2.7, 3.9, 4.1, 4.2, 3.1, 4.1, 3.6,
+             4.3, 4.0, 2.1, 3.8, 2.7, 4.4, 3.1, 3.6, 3.9, 2.9,
+             3.7, 2.8, 3.3, 3.7, 4.2, 2.9, 3.9, 3.5, 3.8, 4.0,
+             3.1, 4.2, 3.0, 4.8, 3.0, 4.4, 4.4, 3.4, 4.0, 3.5)
+
+Teach <- c(3.8, 2.8, 2.2, 3.5, 3.2, 2.7, 4.1, 4.2, 3.7, 3.7,
+           3.3, 3.3, 4.1, 3.1, 2.9, 4.5, 4.3, 3.7, 4.2, 4.0,
+           3.7, 4.0, 2.9, 4.0, 3.3, 4.4, 3.4, 3.8, 3.7, 3.1,
+           3.8, 3.2, 3.5, 3.8, 4.4, 3.7, 4.0, 3.4, 3.2, 3.8,
+           3.7, 4.3, 3.4, 4.0, 3.1, 4.5, 4.8, 3.4, 4.2, 3.4)
+
+Exam <- c(3.8, 3.2, 1.9, 3.5, 2.8, 3.8, 3.8, 4.1, 3.6, 3.6,
+          3.5, 3.3, 3.6, 3.8, 3.8, 4.2, 4.1, 4.0, 4.3, 4.2,
+          4.0, 4.1, 2.7, 4.4, 4.4, 4.3, 3.6, 4.1, 4.2, 3.6,
+          4.4, 3.4, 3.2, 3.7, 4.3, 4.1, 3.7, 4.0, 3.6, 4.0,
+          3.7, 4.2, 4.2, 4.1, 3.2, 4.5, 4.3, 3.6, 4.0, 3.9)
+
+Knowledge <- c(4.5, 3.8, 3.9, 4.1, 3.5, 4.2, 4.5, 4.7, 4.1, 4.1,
+               3.9, 3.9, 4.0, 4.1, 4.5, 4.5, 4.5, 4.5, 4.7, 4.0,
+               4.5, 4.6, 3.7, 4.1, 3.6, 4.4, 3.3, 3.8, 4.2, 3.8,
+               4.0, 3.1, 4.4, 4.3, 5.0, 4.2, 4.5, 4.5, 4.7, 4.3,
+               4.0, 4.2, 3.8, 4.9, 3.7, 4.6, 4.3, 3.5, 4.4, 4.4)
+
+Grade <- c(3.5, 3.2, 2.8, 3.3, 3.2, 3.2, 3.6, 4.0, 3.0, 3.1,
+           3.0, 3.3, 3.2, 3.4, 3.7, 3.8, 3.8, 3.7, 4.2, 3.8,
+           3.3, 3.2, 3.1, 3.9, 4.3, 2.9, 3.2, 3.5, 3.3, 3.2,
+           4.1, 3.5, 3.6, 3.7, 3.3, 3.6, 3.5, 3.4, 3.0, 3.4,
+           3.7, 3.8, 3.7, 3.7, 3.3, 4.0, 3.6, 3.3, 4.1, 3.3)
+
+Enroll <- c(21, 50, 800, 221, 7, 108, 54, 99, 52, 47, 73, 25,
+            37, 83, 70, 16, 14, 12, 20, 18, 260, 100, 118, 35,
+            32, 25, 55, 28, 28, 27, 25, 50, 76, 28, 85, 75, 90,
+            94, 65, 100, 105, 70, 49, 64, 700, 27, 15, 40, 18, 90)
+
+courses <- as.data.frame(cbind(Overall, Teach, Exam, Knowledge, Grade, Enroll))
+head(courses)
+```
+\pagebreak
+
+## Figure 4.4
+
+```{r, echo=TRUE}
+pairs(courses, panel=function(x,y) {
+  points(x,y)
+	abline(lm(y ~ x))
+	lines(lowess(y ~ x), lty = 3)
+	}
+)
+```
+\pagebreak
+
+## Table 4.5
+
+```{r, echo=TRUE}
+reg <- lm(Overall ~ Teach + Exam + Knowledge + Grade + Enroll)
+summary(reg)
+```
+\pagebreak
+```{r, echo=TRUE}
+# remove outliers
+reg_345 <- lm(Overall[-c(3, 45)] ~ Teach[-c(3, 45)] + Exam[-c(3, 45)] +
+                Knowledge[-c(3, 45)] + Grade[-c(3, 45)] + Enroll[-c(3, 45)])
+summary(reg_345)
+
+# VIFs
+s1 <- summary(lm(Teach ~ Exam + Knowledge + Grade + Enroll))
+s2 <- summary(lm(Exam ~ Teach + Knowledge + Grade + Enroll))
+s3 <- summary(lm(Knowledge ~ Exam + Teach + Grade + Enroll))
+s4 <- summary(lm(Grade ~ Exam + Knowledge + Teach + Enroll))
+s5 <- summary(lm(Enroll ~ Exam + Knowledge + Grade + Teach))
+#
+rsq <- c(s1$r.squared, s2$r.squared, s3$r.squared, s4$r.squared, s5$r.squared)
+rsq
+# rounded values used in the book (no difference in practice):
+# rsq <- c(0.58, 0.68, 0.33, 0.38, 0.35)
+1/(1 - rsq)
+```
+\pagebreak
+
+## Table 4.6
+
+```{r, echo=TRUE}
+step(reg, direction = "backward")
+```
+\pagebreak
+
+```{r, echo=TRUE}
+final_reg <- lm(Overall ~ Teach + Knowledge)
+summary(final_reg)
+```
+\pagebreak
+
+## Figure 4.5
+
+```{r, echo=TRUE}
+rawresid <- final_reg$residuals
+infl.reg <- lm.influence(final_reg)
+
+r.std <- rawresid/sqrt(0.3202^2 * (1 - infl.reg$hat))
+r.del <- rawresid/sqrt(infl.reg$sigma^2 * (1 - infl.reg$hat))
+
+par(mfrow=c(2,2))
+boxplot(r.std, ylab = "Standardised residual")
+qqnorm(r.std, main = "")
+boxplot(r.del, ylab = "Deletion residual")
+qqnorm(r.del, main = "")
+```
+\pagebreak
+
+## Figure 4.6
+
+```{r, echo=TRUE}
+par(mfrow = c(3,1), mar = c(4, 4, 2, 0.1))
+lab <- "Standardised residual"
+plot(predict(final_reg), r.std, xlab = "Fitted Value of Overall", ylab = lab)
+plot(Teach, r.std, xlab = "Teacher rating",ylab = lab)
+plot(Knowledge, r.std, xlab = "Knowledge of Subject Rating",ylab = lab)
+```
+\pagebreak
+
+## Figure 4.7
+
+```{r, echo=TRUE}
+par(mfrow = c(3,1), mar = c(4, 4, 2, 0.1))
+lab <- "Deletion residual"
+plot(predict(final_reg), r.del, xlab = "Fitted Value of Overall", ylab = lab)
+plot(Teach, r.del, xlab = "Teacher rating",ylab = lab)
+plot(Knowledge, r.del, xlab = "Knowledge of Subject Rating",ylab = lab)
+```
+\pagebreak
+
+## Figure 4.8
+
+```{r, echo=TRUE}
+par(mfrow = c(1,1))
+plot(1:50, infl.reg$hat, xlab = "Observation Number", ylab = "Cook's Distance")
+segments(1:50, rep(0,50), 1:50, infl.reg$hat)
+```
+\pagebreak
+
+# Table 4.7: Fecundity of Fruit Flies
+
+```{r, echo=TRUE}
+flies <- read.table("data/fruitfly.txt", header = T)
+flies
+```
+\pagebreak
+
+## Table 4.8
+
+```{r, echo=TRUE}
+n <- 25
+x1 <- c(rep(1,n), rep(0,n), rep(-1,n))
+x2 <- c(rep(0,n), rep(1,n), rep(-1,n))
+response <- c(flies$RS, flies$SS, flies$NS)
+
+flies2 <- cbind(x1, x2, response)
+head(flies2)
+tail(flies2)
+
+reg0 <- lm(response ~ 1)
+
+reg <- lm(response ~ x1 + x2)
+summary(reg)
+# Residual sum of squares:
+sum(reg$residuals^2)
+
+anova(reg0, reg)
+```
+\pagebreak
+
+# Table 4.9: A Balanced 2 x 2 Data Set
+
+```{r, echo=TRUE}
+x1 <- c(rep(1,8), rep(-1,8))
+x2 <- c(rep(1,4), rep(-1,4), rep(1,4), rep(-1,4))
+response <- c(23, 25, 27, 29, 26, 32, 30, 31, 22, 23, 21, 21, 37, 38, 40, 35)
+
+cbind(x1, x2, response)
+
+reg0 <- lm(response ~ 1)
+reg1 <- lm(response ~ x1)
+summary(reg1)
+# Residual sum of squares:
+sum(reg1$residuals^2)
+anova(reg0, reg1)
+#
+reg2 <- lm(response ~ x1 + x2)
+summary(reg2)
+sum(reg2$residuals^2)
+anova(reg1, reg2)
+#
+reg3 <- lm(response ~ x1 + x2 + x1:x2)
+summary(reg3)
+sum(reg3$residuals^2)
+anova(reg2, reg3)
+```
+\pagebreak
+
+# Table 4.10: Unbalanced 2 x 2 Data Set
+
+```{r, echo=TRUE}
+x1 <- c(rep(1,21), rep(-1,21))
+x2 <- c(rep(1,8), rep(-1,13), rep(1,8), rep(-1,13))
+response <- c(23, 25, 27, 29, 30, 27, 23, 25,
+              26, 32, 30, 31, NA, NA, NA, NA, NA, NA, NA, NA, NA,
+              22, 23, 21, 21, 19, 23, 17, NA, 37, 38, 40, 35, 39,
+              35, 38, 41, 32, 36, 40, 41, 38)
+
+cbind(x1, x2, response)
+
+reg0 <- lm(response ~ 1)
+reg1 <- lm(response ~ x1)
+summary(reg1)
+# Residual sum of squares:
+sum(reg1$residuals^2)
+anova(reg0, reg1)
+#
+reg2 <- lm(response ~ x1 + x2)
+summary(reg2)
+sum(reg2$residuals^2)
+anova(reg1, reg2)
+#
+reg3 <- lm(response ~ x1 + x2 + x1:x2)
+summary(reg3)
+sum(reg3$residuals^2)
+anova(reg2, reg3)
+```
+\pagebreak
+

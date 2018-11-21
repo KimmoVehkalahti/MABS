@@ -1,0 +1,182 @@
+---
+title:  |  
+  |  *Multivariate Analysis for the Behavioral Sciences,*
+  |  Second Edition (Chapman and Hall/CRC, 2019)
+  |  **Solutions to Exercises of Chapter 9:**
+  |  **Analysis of Longitudinal Data II: Linear Mixed Effects Models for Normal Response Variables**
+author: "Kimmo Vehkalahti and Brian S. Everitt"
+date: "19 November 2018"
+output: 
+  pdf_document:
+    number_sections: no
+    toc: no
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Exercises
+
+## Exercise 9.3
+
+```{r, echo=TRUE}
+oestrogen <- read.table("data/oestrogen.txt", sep = "\t", header = TRUE)
+
+str(oestrogen)
+
+# the data are readily in the long form:
+head(oestrogen, n = 10); tail(oestrogen, n = 10)
+
+attach(oestrogen)
+#independence model
+oestrogen_reg <- lm(depression ~ treatment + BL1 + BL2 + time,
+                    na.action = na.omit)
+summary(oestrogen_reg)
+
+library("lme4")
+
+#random intercept model
+oestrogen_ref <- lmer(depression ~ treatment + BL1 + BL2 + time + (1 | subject),
+                      na.action = na.omit)
+summary(oestrogen_ref)
+
+oestrogen1_ref <- lmer(depression ~ treatment + BL1 + BL2 + time + (time | subject),
+                       na.action = na.omit)
+summary(oestrogen1_ref)
+
+anova(oestrogen_ref, oestrogen1_ref)
+
+#random intercept model ok - CI for treatment effect:
+treat_ci <- c(-4.57-2*0.78,-4.57+2*0.78)
+treat_ci
+detach(oestrogen)
+```
+\pagebreak
+
+## Exercise 9.4
+
+```{r, echo=TRUE}
+phosphate <- structure(list(
+
+    group = structure(c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 
+                      1L, 1L, 1L, 1L, 1L, 1L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 
+                      2L, 2L, 2L, 2L, 2L), 
+                    .Label = c("control", "obese"), class = "factor"), 
+  
+  t0 = c(4.3, 3.7, 4, 3.6, 4.1, 3.8, 3.8, 4.4, 5, 3.7, 3.7, 4.4, 4.7, 4.3, 5, 
+         4.6, 4.3, 3.1, 4.8, 3.7, 5.4, 3, 4.9, 4.8, 4.4, 4.9, 5.1, 4.8, 4.2, 
+         6.6, 3.6, 4.5, 4.6), 
+  
+  t0.5 = c(3.3, 2.6, 4.1, 3, 3.8, 2.2, 3, 3.9, 4, 3.1, 2.6, 3.7, 3.1, 3.3, 4.9, 
+           4.4, 3.9, 3.1, 5, 3.1, 4.7, 2.5, 5, 4.3, 4.2, 4.3, 4.1, 4.6, 3.5, 6.1, 
+           3.4, 4, 4.4), 
+  
+  t1 = c(3, 2.6, 3.1, 2.2, 2.1, 2, 2.4, 2.8, 3.4, 2.9, 2.6, 3.1, 3.2, 3, 4.1, 
+         3.9, 3.1, 3.3, 2.9, 3.3, 3.9, 2.3, 4.1, 4.7, 4.2, 4, 4.6, 4.6, 3.8,
+         5.2, 3.1, 3.7, 3.8),
+  
+  t1.5 = c(2.6, 1.9, 2.3, 2.8, 3, 2.6, 2.5, 2.1, 3.4, 2.2, 2.3, 3.2, 3.3, 2.6, 
+           3.7, 3.9, 3.1, 2.6, 2.8, 2.8, 4.1, 2.2, 3.7, 4.6, 3.4, 4, 4.1, 4.4, 
+           3.6, 4.1, 2.8, 3.3, 3.8), 
+  
+  t2 = c(2.2, 2.9, 2.9, 2.9, 3.6, 3.8, 3.1, 3.6, 3.3, 1.5, 2.9, 3.7, 3.2, 2.2, 
+         3.7, 3.7, 3.1, 2.6, 2.2, 2.9, 2.8, 2.1, 3.7, 4.7, 3.5, 3.3, 3.4, 4.1, 
+         3.3, 4.3, 2.1, 2.4, 3.8), 
+  
+  t3 = c(2.5, 3.2, 3.1, 3.9, 3.4, 3.6, 3.4, 3.8, 3.6, 2.3, 2.2, 4.3, 4.2, 2.5,
+         4.1, 4.2, 3.1, 1.9, 3.1, 3.6, 3.7, 2.6, 4.1, 3.7, 3.4, 4.1, 4.2, 4, 
+         3.1, 3.8, 2.4, 2.3, 3.6), 
+  
+  t4 = c(3.4, 3.1, 3.9, 3.8, 3.6, 3, 3.5, 4, 4, 2.7, 3.1, 3.9, 3.7, 2.4, 4.7, 
+         4.8, 3.6, 2.3, 3.5, 4.3, 3.5, 3.2, 4.7, 3.6, 3.8, 4.2, 4.4, 3.8, 3.5, 
+         4.2, 2.5, 3.1, 3.8), 
+  
+  t5 = c(4.4, 3.9, 4, 4, 3.7, 3.5, 3.7, 3.9, 4.3, 2.8, 3.9, 4.8, 4.3, 3.4, 4.9, 
+         5, 4, 2.7, 3.6, 4.4, 3.7, 3.5, 4.9, 3.9, 4, 4.3, 4.9, 3.8, 3.9, 4.8, 
+         3.5, 3.3, 3.8)), 
+
+.Names = c("group", "t0", "t0.5", "t1", "t1.5", "t2", "t3", "t4", "t5"),
+
+row.names = c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12",
+              "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", 
+              "24", "25", "26", "27", "28", "29", "30", "31", "32", "33"), 
+class = "data.frame")
+```
+\pagebreak
+```{r, echo=TRUE}
+str(phosphate)
+phosphate
+```
+\pagebreak
+R code to plot data and fit models that include a quadratic effect for time; this can be seen in the plots of the data:
+
+```{r, echo=TRUE}
+Group <- phosphate[, 1]
+#plot individual profiles separately for the two groups
+par(mfrow = c(1,2))
+matplot(c(0, 0.5, 1, 1.5, 2, 3, 4, 5), t(phosphate[Group == "control", 2:9]),
+        type = "l", lty = 1, axes = F, xlab = "Time after glucose challenge (hours)",
+        ylab = "Plasma inorganic phosphate level", ylim = c(0,7))
+axis(1, at = c(0, 0.5, 1, 1.5, 2, 3, 4, 5),
+     labels = c("Pre", "30 mins", "1 hour", "1.5 hours", "2 hours", "3 hours", 
+                "4 hours", "5 hours"))
+axis(2)
+title("Controls")
+
+matplot(c(0, 0.5, 1, 1.5, 2, 3, 4, 5), t(phosphate[Group == "obese", 2:9]),
+        type = "l", lty = 1, axes = F, xlab = "Time after glucose challenge (hours)",
+        ylab = "Plasma inorganic phosphate level", ylim = c(0,7))
+axis(1, at = c(0, 0.5, 1, 1.5, 2, 3, 4, 5),
+     labels = c("Pre", "30 mins", "1 hour", "1.5 hours", "2 hours", "3 hours", 
+                "4 hours", "5 hours"))
+axis(2)
+title("Obese")
+
+library("lme4")
+
+#put data into long form for analysis
+
+group <- rep(c(0, 1), c(104, 160))
+
+time <- c(0.0, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0)
+time <- rep(time, 33)
+
+subject <- rep(1:33, rep(8, 33))
+phosphatel <- cbind(subject, time, group, as.vector(t(phosphate[, 2:9])))
+dimnames(phosphatel) <- list(NULL, c("Subject", "Time", "Group", "Plasma"))
+
+phosphatel <- data.frame(phosphatel)
+phosphatel$Group <- factor(phosphatel$Group, levels = c(0, 1), labels = c("Control", "Obese"))
+
+str(phosphatel)
+head(phosphatel, n = 13)
+tail(phosphatel, n = 13)
+#fit independence model allowing a quadratic effect for time
+summary(lm(Plasma ~ Time + I(Time * Time) + Group, data = phosphatel))
+#random intercept model
+phosphate_lme1 <- lmer(Plasma ~ Time + I(Time * Time) + Group + (1 | Subject), data = phosphatel)
+summary(phosphate_lme1)
+#random intercept and slope model
+phosphate_lme2 <- lmer(Plasma ~ Time + Group + I(Time * Time) + (Time | Subject), data = phosphatel)
+summary(phosphate_lme2)
+anova(phosphate_lme1, phosphate_lme2)
+
+#random intercept and slope model preferred
+
+#plot fitted values
+predictions <- matrix(fitted(phosphate_lme2), ncol = 8, byrow = T)
+par(mfrow = c(1,2))
+matplot(matrix(c(0.0, 0.5, 1, 1.5, 2, 3, 4, 5), ncol = 1),
+        t(predictions[1:13, ]), type = "l", lty = 1, col = 1,
+        xlab = "Time (hours after glucose challenge)", 
+        ylab="Plasma inorganic phosphate", ylim = c(0,7))
+title("Fitted control")
+matplot(matrix(c(0.0, 0.5, 1, 1.5, 2, 3, 4, 5), ncol = 1),
+        t(predictions[14:33, ]), type = "l", lty = 1, col = 1,
+        xlab = "Time (hours after glucose challenge)",
+        ylab = "Plasma inorganic phosphate", ylim = c(0,7))
+title("Fitted obese")
+
+
+```

@@ -1,0 +1,224 @@
+---
+title:  |  
+  |  *Multivariate Analysis for the Behavioral Sciences,*
+  |  Second Edition (Chapman and Hall/CRC, 2019)
+  |  **Examples of Chapter 3:**
+  |  **Simple Linear and Locally Weighted Regression**
+author: "Kimmo Vehkalahti and Brian S. Everitt"
+date: "1 October 2018"
+output: 
+  pdf_document:
+    number_sections: no
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+\pagebreak
+
+# Examples
+
+# Table 3.1: Pulse Rates and Heights Data
+
+```{r BPRS data, echo=TRUE}
+heights <- c(160,167,162,175,185,162,173,167,170,170,163,158,157,
+             160,170,177,166,170,148,175,160,153,185,165,165,172,
+             185,163,177,165,182,162,172,177,168,178,182,167,170,
+             160,182,168,155,175,168,180,175,145,170,175)
+#
+pulse <- c(68,80,84,80,80,80,92,92,80,80,80,80,80,
+           78,90,80,72,80,82,76,84,70,80,82,84,116,
+           80,95,80,76,100,88,90,90,90,80,76,80,84,
+           80,80,80,80,104,80,68,84,64,84,72)
+
+hp <- cbind(heights, pulse)
+head(hp)
+```
+
+## Table 3.2
+
+```{r, echo=TRUE}
+summary(lm(pulse ~ heights))
+```
+\pagebreak
+
+## Figure 3.1
+
+```{r, echo=TRUE}
+# layout(matrix(c(2, 0, 1, 3), 2, 2, byrow=TRUE), c(2,1), c(1,2), TRUE)
+plot(pulse ~ heights, xlab = "Heights (cm)", ylab = "Pulse rate (bpm)")
+reg <- lm(pulse ~ heights)
+abline(reg)
+pred <- predict(reg, se.fit = TRUE)
+fitval <- pred$fit
+se <- pred$se.fit
+index <- order(heights)
+y <- fitval[index]
+se <- se[index]
+yu <- y + 1.96*se
+yl <- y - 1.96*se
+lines(heights[index], yu, lty=2)
+lines(heights[index], yl, lty=2)
+```
+\pagebreak
+
+```{r, echo=TRUE, out.width = '75%'}
+hist(heights, ylab = "Frequency", xlab = "Heights", main = "")
+boxplot(pulse, ylab = "Heights")
+```
+\pagebreak
+
+## Figure 3.5
+```{r, echo=TRUE}
+reg <- lm(pulse ~ heights)
+residuals <- reg$residuals
+fitval <- predict(reg)
+par(mfrow = c(2,2))
+boxplot(residuals, ylab = "Residuals")
+title(sub="(a)")
+qqnorm(residuals, main="")
+title(sub="(b)")
+plot(residuals ~ heights, xlab = "Heights (cm)", ylab = "Residuals")
+abline(h=0)
+title(sub="(c)")
+plot(residuals ~ fitval, xlab = "Fitted pulse rates", ylab = "Residuals")
+abline(h=0)
+title(sub="(d)")
+```
+\pagebreak
+
+## Figure 3.8 and Figure 3.10
+```{r, echo=TRUE}
+par(mfrow = c(1,1))
+plot(pulse ~ heights, xlab = "Height (cm)", ylab = "Pulse rate (bpm)")
+abline(lm(pulse ~ heights))
+lines(lowess(pulse ~ heights), lty=2)
+lines(smooth.spline(heights, pulse), lty=3)
+legend("topleft", c("Linear regression fit", "Lowess fit", "Spline fit"), lty=1:3)
+```
+\pagebreak
+
+# Table 3.3: Data on Oxygen Uptake and Expired Volume
+```{r, echo=TRUE}
+# kinesiology data
+oxygen <- c(574,592,664,667,718,770,927,947,1020,1096,1277,1323,1330,1599,
+            1639,1787,1790,1794,1874,2049,2132,2160,2292,2312,2475,2489,2490,2577,
+            2766,2812,2893,2957,3052,3151,3161,3266,3386,3452,3521,3543,3676,3741,
+            3844,3878,4002,4114,4152,4252,4290,4331,4332,4390,4393)
+
+ev <- c(21.9,18.6,18.6,19.1,19.2,16.9,18.3,17.2,19.0,19.0,18.6,22.8,24.6,24.9,
+        29.2,32.0,27.9,31.0,30.7,35.4,36.1,39.1,42.6,39.9,46.2,50.9,46.5,46.3,
+        55.8,54.5,63.5,60.3,64.8,69.2,74.7,72.9,80.4,83.0,86.0,88.9,96.8,89.1,
+        100.9,103.0,113.4,111.4,119.9,127.2,126.4,135.5,138.9,143.7,144.8)
+oxyev <- cbind(oxygen, ev)
+head(oxyev)
+```
+\pagebreak
+
+## Figure 3.2
+```{r, echo=TRUE}
+plot(ev ~ oxygen, xlab = "Oxygen uptake", ylab = "Expired ventilation", 
+     ylim = c(5,150), xlim = c(500,4500))
+abline(lm(ev ~ oxygen))
+```
+\pagebreak
+
+## Table 3.4
+```{r, echo=TRUE}
+summary(lm(ev ~ oxygen))
+```
+\pagebreak
+
+## Figure 3.3
+```{r, echo=TRUE}
+plot(ev ~ oxygen, xlab = "Oxygen uptake", ylab = "Expired ventilation",
+     ylim = c(5,150), xlim = c(500,4500))
+o2 <- oxygen*oxygen
+reg <- lm(ev ~ oxygen + o2)
+lines(oxygen, reg$fit)
+```
+\pagebreak
+
+## Table 3.5
+```{r, echo=TRUE}
+summary(reg)
+```
+\pagebreak
+
+## Figure 3.6
+```{r, echo=TRUE}
+reg <- lm(ev ~ oxygen)
+residuals <- reg$residuals
+fitval <- predict(reg)
+par(mfrow = c(2,2))
+boxplot(residuals, ylab = "Residuals")
+title(sub="(a)")
+qqnorm(residuals, main="")
+title(sub="(b)")
+plot(residuals ~ oxygen, xlab = "Oxygen uptake", ylab = "Residuals")
+abline(h=0)
+title(sub="(c)")
+plot(residuals ~ fitval, xlab = "Fitted expired ventilation", ylab = "Residuals")
+abline(h=0)
+title(sub="(d)")
+```
+\pagebreak
+
+## Figure 3.7
+```{r, echo=TRUE}
+o2 <- oxygen*oxygen
+reg <- lm(ev ~ oxygen + o2)
+residuals <- reg$residuals
+fitval <- predict(reg)
+par(mfrow = c(2,2))
+boxplot(residuals, ylab = "Residuals")
+title(sub="(a)")
+qqnorm(residuals, main="")
+title(sub="(b)")
+plot(residuals ~ oxygen, xlab = "Oxygen uptake", ylab = "Residuals")
+abline(h=0)
+title(sub="(c)")
+plot(residuals ~ fitval, xlab = "Fitted expired ventilation", ylab = "Residuals")
+abline(h=0)
+title(sub="(d)")
+```
+\pagebreak
+
+# Table 3.6: Data of Challenger Vote and Perot Vote
+```{r, echo=TRUE}
+vote <- read.table("data/vote.txt", sep = "\t", header = TRUE)
+head(vote)
+```
+## Figure 3.11 and Figure 3.13
+```{r, echo=TRUE}
+attach(vote)
+par(mfrow = c(1,1))
+plot(chall ~ perot, xlab = "Vote for Perot (%)", ylab = "Challenger's vote share (%)",
+     ylim = c(5,70))
+abline(lm(chall ~ perot))
+lines(lowess(chall ~ perot), lty=2)
+lines(smooth.spline(perot, chall), lty=3)
+legend("topright", c("Linear Fit", "Lowess fit", "Spline fit"), lty=1:3)
+detach(vote)
+```
+## Figure 3.12
+```{r, echo=TRUE}
+attach(vote)
+reg <- lm(chall ~ perot)
+residuals <- reg$residuals
+fitval <- predict(reg)
+par(mfrow = c(2,2))
+boxplot(residuals, ylab = "Residuals")
+title(sub="(a)")
+qqnorm(residuals, main="")
+title(sub="(b)")
+plot(residuals ~ perot, xlab = "Perot vote (%)", ylab = "Residuals")
+abline(h=0)
+title(sub="(c)")
+plot(residuals ~ fitval, xlab = "Fitted value of challenger vote", ylab = "Residuals")
+abline(h=0)
+title(sub="(d)")
+detach(vote)
+```
+

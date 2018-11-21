@@ -1,0 +1,370 @@
+---
+title:  |  
+  |  *Multivariate Analysis for the Behavioral Sciences,*
+  |  Second Edition (Chapman and Hall/CRC, 2019)
+  |  **Solutions to Exercises of Chapter 4:**
+  |  **Multiple Linear Regression**
+author: "Kimmo Vehkalahti and Brian S. Everitt"
+date: "9 October 2018"
+output: 
+  pdf_document:
+    number_sections: no
+    toc: no
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Solutions
+
+## Exercise 4.1
+
+```{r echo=TRUE}
+usapol <- structure(list(
+
+SO2 = c(10, 13, 12, 17, 56, 36, 29, 14, 10, 24, 110, 28, 17, 8, 30, 9, 47,
+        35, 29, 14, 56, 14, 11, 46, 11, 23, 65, 26, 69, 61, 94, 10, 18, 9,
+        10, 28, 31, 26, 29, 31, 16),
+
+Temp = c(70.3, 61, 56.7, 51.9, 49.1, 54, 57.3, 68.4, 75.5, 61.5, 50.6, 52.3,
+         49, 56.6, 55.6, 68.3, 55, 49.9, 43.5, 54.5, 55.9, 51.5, 56.8, 47.6,
+         47.1, 54, 49.7, 51.5, 54.6, 50.4, 50, 61.6, 59.4, 66.2, 68.9, 51,
+         59.3, 57.8, 51.1, 55.2, 45.7),
+
+Manuf = c(213, 91, 453, 454, 412, 80, 434, 136, 207, 368, 3344, 361, 104, 125,
+          291, 204, 625, 1064, 699, 381, 775, 181, 46, 44, 391, 462, 1007, 266,
+          1692, 347, 343, 337, 275, 641, 721, 137, 96, 197, 379, 35, 569),
+
+Pop = c(582, 132, 716, 515, 158, 80, 757, 529, 335, 497, 3369, 746, 201, 277,
+        593, 361, 905, 1513, 744, 507, 622, 347, 244, 116, 463, 453, 751, 540,
+        1950, 520, 179, 624, 448, 844, 1233, 176, 308, 299, 531, 71, 717),
+
+Wind = c(6, 8.2, 8.7, 9, 9, 9, 9.3, 8.8, 9, 9.1, 10.4, 9.7, 11.2, 12.7, 8.3,
+         8.4, 9.6, 10.1, 10.6, 10, 9.5, 10.9, 8.9, 8.8, 12.4, 7.1, 10.9, 8.6,
+         9.6, 9.4, 10.6, 9.2, 7.9, 10.9, 10.8, 8.7, 10.6, 7.6, 9.4, 6.5, 11.8),
+
+Precip = c(7.05, 48.52, 20.66, 12.95, 43.37, 40.25, 38.89, 54.47, 59.8, 48.34,
+           34.44, 38.74, 30.85, 30.58, 43.11, 56.77, 41.31, 30.96, 25.94, 37,
+           35.89, 30.18, 7.77, 33.36, 36.11, 39.04, 34.99, 37.01, 39.93, 36.22,
+           42.75, 49.1, 46, 35.94, 48.19, 15.17, 44.68, 42.59, 38.79, 40.75, 29.07),
+
+Days = c(36, 100, 67, 86, 127, 114, 111, 116, 128, 115, 122, 121, 103, 82, 123,
+         113, 111, 129, 137, 99, 105, 98, 58, 135, 166, 132, 155, 134, 115, 147,
+         125, 105, 119, 78, 103, 89, 116, 115, 164, 148, 123)),
+
+.Names = c("SO2", "Temp", "Manuf", "Pop", "Wind", "Precip", "Days"),
+
+row.names = c("Phoenix", "Little Rock", "San Francisco", "Denver", "Hartford",
+              "Wilmington", "Washington", "Jacksonville", "Miami", "Atlanta",
+              "Chicago", "Indianapolis", "Des Moines", "Wichita", "Louisville",
+              "New Orleans", "Baltimore", "Detroit", "Minneapolis-St. Paul",
+              "Kansas City", "St. Louis", "Omaha", "Alburquerque", "Albany",
+              "Buffalo", "Cincinnati", "Cleveland", "Columbus", "Philadelphia",
+              "Pittsburgh", "Providence", "Memphis", "Nashville", "Dallas",
+              "Houston", "Salt Lake City", "Norfolk", "Richmond", "Seattle",
+              "Charleston", "Milwaukee"), class = "data.frame")
+
+head(usapol, n = 10)
+
+tail(usapol, n = 10)
+
+attach(usapol)
+# Scatterplot matrix with fitted linear and locally weighted regressions
+pairs(usapol, panel = function(x, y) {
+                        points(x, y)
+                        abline(lm(y ~ x))
+                        lines(lowess(y ~ x), lty = 2)
+                      }
+      )
+
+usapol_reg <- lm(SO2 ~ Temp + Manuf + Pop + Wind + Precip + Days)
+summary(usapol_reg)
+
+# Run regressions to get Rsq values
+s1 <- summary(lm(Temp ~ Manuf + Pop + Wind + Precip + Days))
+s2 <- summary(lm(Manuf ~ Temp + Pop + Wind + Precip + Days))
+s3 <- summary(lm(Pop ~ Manuf + Temp + Wind + Precip + Days))
+s4 <- summary(lm(Wind ~ Manuf + Pop + Temp + Precip + Days))
+s5 <- summary(lm(Precip ~ Manuf + Pop + Wind + Temp + Days))
+s6 <- summary(lm(Days ~ Manuf + Pop + Wind + Precip + Temp))
+#
+# VIFs
+rsq <- c(s1$r.squared, s2$r.squared, s3$r.squared, s4$r.squared, s5$r.squared, s6$r.squared)
+rsq
+1/(1 - rsq)
+
+# Drop population size
+usapol_reg1 <- lm(SO2 ~ Temp + Manuf + Wind + Precip + Days)
+step(usapol_reg1, method = "backwards")
+#
+# Drop Days
+usapol_reg2 <- lm(SO2 ~ Temp + Manuf + Wind + Precip)
+pred <- predict(usapol_reg2)
+resid <- residuals(usapol_reg2)
+
+# Normal probability plot and plot of residuals against fitted values
+par(mfrow = c(1,2))
+qqnorm(resid)
+plot(resid ~ pred, xlab = "Fitted values", ylab = "Residuals")
+
+# Plot of residuals against each explanatory variable in the final model
+par(mfrow = c(2,2))
+plot(resid ~ Temp, xlab = "Temperature", ylab = "Residuals")
+plot(resid ~ Manuf, xlab="N of manuf", ylab = "Residuals")
+plot(resid ~ Wind, ylab = "Residuals")
+plot(resid ~ Precip, xlab = "Precipitation", ylab = "Residuals")
+
+detach(usapol)
+```
+\pagebreak
+
+## Exercise 4.2
+
+```{r, echo=TRUE}
+quality <- structure(list(
+
+age = structure(c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 2L, 2L, 2L, 1L, 1L, 1L, 2L, 2L, 2L, 2L,
+                  1L, 2L, 2L, 2L, 1L), .Label = c("A5-6", "A8-9"), class = "factor"),
+
+sex = structure(c(1L,2L, 1L, 2L, 1L, 2L, 2L, 2L, 1L, 2L, 1L, 1L, 2L, 1L, 2L, 1L, 2L, 2L,
+                  2L, 1L, 1L, 1L, 1L), .Label = c("Male", "Female"), class = "factor"),
+
+location = structure(c(3L, 2L, 1L, 2L, 3L, 3L, 4L, 2L, 3L, 2L, 3L, 1L, 3L, 2L, 2L, 4L,
+                       2L, 3L, 4L, 2L, 4L, 4L, 4L),
+                     .Label = c("Home", "School", "Room", "Kroom"), class = "factor"),
+
+coherence = c(3.81, 1.63, 3.54, 4.21, 3.3, 2.32, 4.51, 3.18, 3.02, 2.77, 3.35, 2.66,
+              4.7, 4.31, 2.16, 1.89, 1.94, 2.86, 3.11, 2.9, 2.41, 2.32, 2.78),
+
+maturity = c(3.62, 1.61, 3.63, 4.11, 3.12, 2.13, 4.31, 3.08, 3, 2.71, 3.07, 2.72,
+             4.98, 4.21, 2.91, 1.87, 1.99, 2.93, 3.01, 2.87, 2.38, 2.33, 2.79),
+
+delay = c(45, 27, 102, 39, 41, 70, 72, 41, 71, 56, 88, 13, 29, 39, 10, 15, 46, 57,
+          26, 14, 45, 19, 9),
+
+prosecute = structure(c(1L, 2L, 1L, 1L, 1L, 2L, 1L, 1L, 1L, 2L, 2L, 1L, 1L, 2L, 1L, 2L,
+                        2L, 1L, 2L, 1L, 1L, 2L, 2L),
+                      .Label = c("No", "Yes"), class = "factor"),
+
+qualityct = c(34.11, 36.59, 37.23, 39.65, 42.07, 44.91, 45.23, 47.53, 54.64, 57.87,
+              57.07, 45.81, 49.38, 49.53, 67.08, 83.15, 80.67, 78.47, 77.59, 76.28,
+              59.64, 68.44, 65.07)),
+              .Names = c("age", "sex", "location", "coherence", "maturity", "delay",
+                         "prosecute", "qualityct"),
+
+row.names = c(NA, -23L), class = "data.frame")
+
+str(quality)
+```
+\pagebreak
+```{r, echo=TRUE}
+head(quality, n = 10); tail(quality, n = 4)
+
+attach(quality)
+plot(coherence, maturity)
+cor(coherence, maturity)
+
+quality_reg <- lm(qualityct ~ age + location + maturity + delay + prosecute)
+
+# Show structure of dummy variables
+contrasts(age)
+contrasts(sex)
+contrasts(location)
+contrasts(prosecute)
+
+summary(quality_reg)
+
+step(quality_reg, method = "backwards")
+
+quality1_reg <- lm(qualityct ~ age + delay + prosecute)
+
+pred <- predict(quality1_reg)
+resd <- residuals(quality1_reg)
+```
+\pagebreak
+```{r, echo=TRUE, out.width = '75%'}
+qqnorm(resd)
+plot(pred, resd)
+# etc,etc
+detach(quality)
+```
+Maturity and coherence are highly correlated, so coherence is dropped from regression. Backwards search also drops maturity; residual plots look okay. You need to interpret the estimated regression coefficients.
+
+\pagebreak
+
+## Exercise 4.3
+
+For more information, see the Wikipedia article:
+
+https://en.wikipedia.org/wiki/Anscombe%27s_quartet
+
+```{r, echo=TRUE}
+quartet <- structure(list(
+  x1 = c(10, 8, 13, 9, 11, 14, 6, 4, 12, 7, 5),
+  y1 = c(8.04, 6.95, 7.58, 8.81, 8.33, 9.96, 7.24, 4.26, 10.84, 4.82, 5.68),
+
+  x2 = c(10, 8, 13, 9, 11, 14, 6, 4, 12, 7, 5),
+  y2 = c(9.14, 8.14, 8.74, 8.77, 9.26, 8.1, 6.13, 3.1, 9.13, 7.26, 4.74),
+
+  x3 = c(10, 8, 13, 9, 11, 14, 6, 4, 12, 7, 5),
+  y3 = c(7.46, 6.77, 12.74, 7.11, 7.81, 8.84, 6.08, 5.39, 8.15, 6.42, 5.73),
+  
+  x4 = c(8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 19),
+  y4 = c(6.58, 5.76, 7.71, 8.84, 8.47, 7.04, 5.25, 5.56, 7.91, 6.89, 12.5)),
+
+.Names = c("x1", "y1", "x2", "y2", "x3", "y3", "x4", "y4"),
+row.names = c(NA, -11L), class = "data.frame"
+)
+
+quartet
+
+attach(quartet)
+
+# (Exceptionally) fit regressions first:
+
+lm1 <- lm(y1 ~ x1); summary(lm1)
+lm2 <- lm(y2 ~ x2); summary(lm2)
+lm3 <- lm(y3 ~ x3); summary(lm3)
+lm4 <- lm(y4 ~ x4); summary(lm4)
+```
+We get the same results on all data sets! How about some graphs?
+\pagebreak
+```{r, echo=TRUE}
+par(mfrow = c(2,2))
+plot(y1 ~ x1, xlim = c(3, 19), ylim = c(3, 13))
+plot(y2 ~ x2, xlim = c(3, 19), ylim = c(3, 13))
+plot(y3 ~ x3, xlim = c(3, 19), ylim = c(3, 13))
+plot(y4 ~ x4, xlim = c(3, 19), ylim = c(3, 13))
+
+pred1 <- predict(lm1)
+pred2 <- predict(lm2)
+pred3 <- predict(lm3)
+pred4 <- predict(lm4)
+
+resd1 <- residuals(lm1)
+resd2 <- residuals(lm2)
+resd3 <- residuals(lm3)
+resd4 <- residuals(lm4)
+
+plot(pred1, resd1)
+plot(pred2, resd2)
+plot(pred3, resd3)
+plot(pred4, resd4)
+
+detach(quartet)
+```
+\pagebreak
+
+## Exercise 4.4
+
+```{r, echo=TRUE}
+fat <- structure(list(
+    
+  Sex = structure(c(1L, 2L, 1L, 1L, 2L, 2L, 1L, 2L, 2L, 2L,
+                      2L, 1L, 2L, 2L, 2L, 1L, 2L, 2L, 2L, 2L),
+                    .Label = c("F", "M"), class = "factor"),
+    
+    Age = c(23L, 23L, 27L, 27L, 39L, 41L, 45L, 49L, 50L, 53L,
+            53L, 54L, 54L, 56L, 57L, 57L, 58L, 58L, 60L, 61L),
+    
+    Pcfat = c(9.5, 27.9, 7.8, 17.8, 31.4, 25.9, 27.4, 25.2, 31.1,
+              34.7, 42, 20, 29.1, 32.5, 30.3, 21, 33, 33.8, 41.1, 34.5)),
+    
+.Names = c("Sex", "Age", "Pcfat"), row.names = c(NA, -20L ), class = "data.frame")
+
+fat
+
+attach(fat)
+```
+\pagebreak
+```{r, echo=TRUE}
+fat_reg <- lm(Pcfat ~ Age)
+plot(Age, Pcfat, xlab = "Age", ylab = "%fat", type = "n")
+text(Age, Pcfat, labels = Sex)
+abline(fat_reg)
+
+summary(lm(Pcfat ~ Age + Sex))
+
+plot(Age, Pcfat, xlab = "Age", ylab = "%fat", type = "n")
+text(Age, Pcfat, labels = Sex)
+# Use figures from summary to find slope and intercepts of lines for men and women
+# 5.93+11.56=17.49
+abline(a = 5.93, b = 0.29)
+abline(a = 17.49, b = 0.29, lty = 2)
+legend("topleft", c("Females", "Males"), lty = 1:2)
+
+summary(lm(Pcfat ~ Age * Sex))
+plot(Age, Pcfat, xlab = "Age", ylab = "%fat", type = "n")
+text(Age, Pcfat, labels = Sex)
+abline(a = 3.47, b = 0.35)
+abline(a = 20.01, b = 0.24, lty = 2)
+legend("topleft", c("Females", "Males"), lty = 1:2)
+detach(fat)
+```
+\pagebreak
+
+## Exercise 4.5
+
+```{r, echo=TRUE}
+blood <- structure(list(
+  History = structure(c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L,
+                        1L, 1L, 1L, 1L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L,
+                        2L, 2L, 2L, 2L, 2L, 2L),
+                      .Label = c("Present", "Absent"), class = "factor"),
+  
+  Smoking = structure(c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 2L, 2L, 2L, 2L, 2L, 2L, 3L, 3L, 3L,
+                        3L, 3L, 3L, 3L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 2L, 2L, 2L, 2L,
+                        3L, 3L, 3L, 3L, 3L, 3L),
+                      .Label = c("NonS", "ExS", "CS"), class = "factor"),
+  
+  Bloodp = c(125, 156, 103, 129, 110, 128, 135, 114, 107, 134, 140, 120, 115, 135, 120,
+             123, 113, 165, 145, 120, 114, 110, 91, 136, 105, 125, 103, 110, 110, 128,
+             105, 90, 140, 125, 123, 108, 113, 160)),
+  
+.Names = c("History", "Smoking", "Bloodp"), row.names = c(NA, -38L), class = "data.frame")
+
+str(blood)
+head(blood)
+tail(blood)
+
+attach(blood)
+blood_reg <- lm(Bloodp ~ History * Smoking)
+summary(blood_reg)
+qqnorm(residuals(blood_reg))
+detach(blood)
+```
+\pagebreak
+
+## Exercise 4.6
+
+```{r, echo=TRUE}
+oestrogen <- structure(list(
+  Treatment = structure(c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L,
+                          2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L),
+            .Label = c("Placebo", "Active"), class = "factor"),
+  
+  BL1 = c(18, 25, 24, 19, 22, 27, 21, 26, 20, 24, 24, 27, 19, 25,
+          19, 21, 21, 25, 25, 15, 27),
+  
+  BL2 = c(18, 27, 17, 15, 20, 28, 16, 26, 19, 20, 22, 27, 15, 28,
+          18, 20, 21, 24, 25, 22, 26),
+  
+  Depression = c(15, 10, 12, 5, 5, 9, 11, 13, 6, 18, 10, 7, 8, 2,
+                 6, 11, 5, 11, 6, 6, 10)),
+  
+.Names = c("Treatment", "BL1", "BL2", "Depression"),
+row.names = c(NA, -21L), class = "data.frame")
+
+str(oestrogen)
+oestrogen
+
+attach(oestrogen)
+oestrogen_reg <- lm(Depression ~ Treatment + BL1 + BL2)
+summary(oestrogen_reg)
+detach(oestrogen)
+#
+treatCI <- c(-2.477 - 2*1.707, -2.477 + 2*1.707)
+treatCI
+```
+CI contains the value 0, so there is no evidence of a treatment effect.

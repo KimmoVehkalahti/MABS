@@ -1,0 +1,68 @@
+---
+title:  |  
+  |  *Multivariate Analysis for the Behavioral Sciences,*
+  |  Second Edition (Chapman and Hall/CRC, 2019)
+  |  **Exercises of Chapter 5:**
+  |  **Generalized Linear Models**
+author: "Kimmo Vehkalahti and Brian S. Everitt"
+date: "9 November 2018"
+output: 
+  pdf_document:
+    number_sections: no
+    toc: no
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Exercises
+
+## Exercise 5.1
+
+Use the bladder cancer data (see below) and modify the R code given in the **Examples of Chapter 5** to analyse the data as instructed.
+
+```{r echo=TRUE}
+bladder <- read.table("data/bladder.txt", header = T)
+bladder <- within(bladder,
+             X <- factor(X, labels = c("< 3cm", "> 3cm"))
+)
+bladder
+```
+**Helpful hints:**
+
+Consider a *Poisson process*, in which the waiting times between successive events of interest (the tumors in this case) are independent
+and exponentially distributed with common mean, $1/\lambda$ (say).Then the number of events that occur up to time $t$ has a Poisson distribution with mean $\mu = \lambda t$. Here the parameter of real interest is the rate at which events occur, $\lambda$, and for a single explanatory variable, $x$, we can adopt a Poisson regression approach using the model
+$$\log(\lambda) = \log \frac{\mu}{t} = \beta_0 + \beta_1 x$$
+to examine the dependence of $\lambda$ on $x$. Rearranging this model we obtain
+$$\log(\mu) = \beta_0 + \beta_1 x + \log t$$
+In this form the model can be fitted within the GLM framework with $\log t$ as a variable in the model whose regression coefficient is *fixed* at unity; this is usually known as an *offset*.
+\pagebreak
+
+## Exercise 5.2
+
+Use the CHDrisks data (see below) and modify the R code given in the **Examples of Chapter 5** to analyse the data.
+
+```{r, echo=TRUE}
+CHDrisks <- read.table("data/CHDrisks.txt", header = T)
+CHDrisks <- within(CHDrisks,
+            {
+             Smoking <- factor(Smoking, labels = c("non-smoker", "1-10", "11-20", "20+"))
+             Press <- factor(Press, labels = c("< 140", ">= 140"))
+             Behavior <- factor(Behavior, labels = c("Type B", "Type A"))
+            }
+)
+str(CHDrisks)
+```
+**Helpful hints:**
+
+Letting $y_i$ be the number of cases of CHD and $T_i$ be the person years of follow-up (this is defined as the total duration of observed follow-up, from entry into the study until either disease detection or end of follow-up) where $i$ indexes the risk group and takes values 1 to 16. To fit a GLM with only smoking behavior as the single risk factor assume that the values of this variable are quantitative although this is not strictly the case and an alternative would be to use a factor (or three dummy variables) to code the four categories of smoking. The model used is the same as for the bladder cancer data (in Exercise 5.1):
+
+$$\log \frac{\mu_i}{T_i} = \beta_0 + \beta_1 \text{Smoking}_i$$,
+
+where $\mu_i = E(y_i)$ and $T_i$ is the number of person years for category $i$. Remember that $\log T_i$ has to be included as an offset (see previous exercise).
+
+\pagebreak
+```{r, echo=TRUE}
+
+```

@@ -1,0 +1,56 @@
+---
+title:  |  
+  |  *Multivariate Analysis for the Behavioral Sciences,*
+  |  Second Edition (Chapman and Hall/CRC, 2019)
+  |  **Solutions to Exercises of Chapter 5:**
+  |  **Generalized Linear Models**
+author: "Kimmo Vehkalahti and Brian S. Everitt"
+date: "10 November 2018"
+output: 
+  pdf_document:
+    number_sections: no
+    toc: no
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Exercises
+
+## Exercise 5.1
+
+```{r echo=TRUE}
+bladder <- read.table("data/bladder.txt", header = T)
+bladder <- within(bladder,
+             X <- factor(X, labels = c("< 3cm", "> 3cm"))
+)
+bladder
+
+# (solution still in process - check that it corresponds to the comments below!)
+
+```
+The estimated model is
+
+$$\log \lambda = -2.339 + 0.229 x$$
+So for smaller tumors $(x=0)$, the estimated (baseline) rate is exp(-2.339) = 0.096 and for larger tumors $(x=1)$, the estimated rate is exp(-2.339 + 0.229) = 0.12. The rate for larger tumors is estimated as 0.12 / 0.096 = 1.25 times the rate for smaller tumors. In terms of waiting times between recurrences the means are 1 / 0.096 = 10.42 months for smaller tumors and 1 / 0.12 = 8.33 months for larger tumors.  But the regression coefficient for the dummy variable coding tumor size is seen to be non-significant so the data give no evidence that rates or waiting times for large and small tumors are different. This becomes apparent if we construct a confidence interval for the rate for larger tumors from the confidence limits given in the output as [exp(-2.339 - 0.371), exp(-2.339 + 0.829)], i.e., [0.067, 0.221]. This interval contains the rate for smaller tumors. There is no evidence that size of primary tumor is associated with number of recurrent tumors.
+
+\pagebreak
+
+## Exercise 5.2
+
+```{r, echo=TRUE}
+CHDrisks <- read.table("data/CHDrisks.txt", header = T)
+CHDrisks <- within(CHDrisks,
+            {
+             Smoking <- factor(Smoking, labels = c("non-smoker", "1-10", "11-20", "20+"))
+             Press <- factor(Press, labels = c("< 140", ">= 140"))
+             Behavior <- factor(Behavior, labels = c("Type B", "Type A"))
+            }
+)
+str(CHDrisks)
+
+# (solution still in process)
+
+
+```

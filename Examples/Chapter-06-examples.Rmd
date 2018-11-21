@@ -1,0 +1,131 @@
+---
+title:  |  
+  |  *Multivariate Analysis for the Behavioral Sciences,*
+  |  Second Edition (Chapman and Hall/CRC, 2019)
+  |  **Examples of Chapter 6:**
+  |  **Applying Logistic Regression**
+author: "Kimmo Vehkalahti and Brian S. Everitt"
+date: "10 November 2018"
+output: 
+  pdf_document:
+    number_sections: no
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+\pagebreak
+
+# Examples
+
+# Table 6.1: Psychiatric Caseness Data
+
+```{r, echo=TRUE}
+GHQ <- c(0:10, 0:10)
+sex <- c(rep(0,11), rep(1,11))
+ncases <- c(4, 4, 8, 6, 4, 6, 3, 2, 3, 2, 1, 1, 2, 2, 1, 3, 3, 2, 4, 3, 2, 2)
+nnotcases <- c(80, 29, 15, 3, 2, 1, 1, 0, 0, 0, 0, 36, 25, 8, 4, 1, 1, 1, 2, 1, 0, 0)
+cbind(sex, GHQ, ncases, nnotcases)
+sex <- factor(sex, levels = c(0, 1), labels = c("F", "M"))
+```
+\pagebreak
+
+## Tables 6.2 and 6.3, Figure 6.1
+
+```{r, echo=TRUE}
+GHQ_reg <- glm(cbind(ncases,nnotcases) ~ sex, family = binomial)
+summary(GHQ_reg)
+predict(GHQ_reg, type = "response")
+GHQ_reg1 <- glm(cbind(ncases,nnotcases) ~ GHQ, family = binomial)
+fitted <- predict(GHQ_reg1, type = "response")
+pobsv <- ncases / (ncases + nnotcases)
+plot(GHQ, pobsv, type = "n", xlab = "GHQ score", ylab = "Observed probability of being a case")
+text(GHQ, pobsv, ifelse(sex == "F", "\\VE", "\\MA"), vfont = c("serif", "plain"), cex = 1.25)
+lines(0:10, fitted[1:11])
+GHQ_lin <- lm(pobsv ~ GHQ)
+summary(GHQ_lin)
+fitted <- predict(GHQ_lin)
+lines(0:10, fitted[1:11], lty = 2)
+legend("topleft", c("Logistic model", "Linear model"), lty = 1:2)
+```
+\pagebreak
+
+## Tables 6.4 and 6.5, Figures 6.2 and 6.3
+
+```{r, echo=TRUE}
+GHQ_reg2 <- glm(cbind(ncases,nnotcases) ~ sex + GHQ, family = binomial)
+summary(GHQ_reg2)
+fitted <- predict(GHQ_reg2, type = "response")
+pobsv <- ncases / (ncases + nnotcases)
+plot(GHQ, pobsv, type = "n", xlab = "GHQ score", ylab = "Observed probability of being a case")
+text(GHQ, pobsv, ifelse(sex == "F", "\\VE", "\\MA"), vfont = c("serif", "plain"), cex = 1.25)
+lines(0:10, fitted[1:11])
+lines(0:10, fitted[12:22], lty = 2)
+legend("topleft", c("Women", "Men"), lty = 1:2)
+#interaction model
+GHQ_reg3 <- glm(cbind(ncases,nnotcases) ~ sex * GHQ, family = binomial)
+summary(GHQ_reg3)
+
+fitted <- predict(GHQ_reg3, type = "response")
+pobsv <- ncases / (ncases + nnotcases)
+plot(GHQ, pobsv, type = "n", xlab = "GHQ score", ylab = "Observed probability of being a case")
+text(GHQ, pobsv, ifelse(sex == "F", "\\VE", "\\MA"), vfont = c("serif", "plain"), cex = 1.25)
+lines(0:10, fitted[1:11])
+lines(0:10, fitted[12:22], lty = 2)
+legend("topleft", c("Women", "Men"), lty = 1:2)
+```
+\pagebreak
+
+# Table 6.6: Do-It-Yourself Data
+
+```{r, echo=TRUE}
+work <- rep(c(1, 2, 3), c(12, 12, 12))
+tenure <- rep(c(rep(1, 6), rep(2, 6)), 3)
+type <- rep(c(rep(1, 3), rep(2, 3)), 6)
+age <- rep(c(1, 2, 3), 12)
+
+yes <- c(18, 15, 6, 34, 10, 2, 15, 13, 9, 28, 4, 6, 5, 3, 1, 56, 56, 35, 1, 1, 1, 12, 21, 
+         8, 17, 10, 15, 29, 3, 7, 34, 17, 19, 44, 13, 16, 2, 0, 3, 23, 52, 49, 3, 2, 0, 
+         9, 31, 51, 30, 23, 21, 22, 13, 11, 25, 19, 40, 25, 16, 12, 8, 5, 1, 54, 191, 
+         102, 4, 2, 2, 19, 76, 61)
+no <- yes[c(7:12, 19:24, 31:36, 43:48, 55:60, 67:72)]
+yes <- yes[c(1:6, 13:18, 25:30, 37:42, 49:54, 61:66)]
+
+work <- factor(work, levels = c(1, 2, 3), labels = c("skilled", "unskilled", "office"))
+tenure <- factor(tenure, levels = c(1, 2), labels = c("rent", "own"))
+type <- factor(type, levels = c(1, 2), labels = c("apartment", "house"))
+age <- factor(age, levels = c(1, 2, 3), labels = c("<30", "31-45", "46+"))
+
+data.frame(work, tenure, type, age, yes, no)
+```
+\pagebreak
+
+## Table 6.7
+
+```{r, echo=TRUE}
+# R will create the dummy variables automatically when using factor variables:
+reg <- glm(cbind(yes,no) ~ work + type + tenure + age, family = "binomial")
+summary(reg)
+```
+\pagebreak
+
+## Table 6.8
+
+```{r, echo=TRUE}
+reg <- glm(cbind(yes,no) ~ work + tenure + type + age, family = binomial)
+step(reg, direction = "backward")
+```
+\pagebreak
+
+# Tables 6.10 and 6.11: Low Back Pain Data
+
+```{r, echo=TRUE}
+library(HSAUR3)
+data(backpain)
+str(backpain)
+library(survival)
+backpain_glm <- clogit(I(status == "case") ~ driver + suburban + strata(ID), data = backpain)
+summary(backpain_glm)
+```
+

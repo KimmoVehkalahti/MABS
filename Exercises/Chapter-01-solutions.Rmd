@@ -1,0 +1,68 @@
+---
+title:  |  
+  |  *Multivariate Analysis for the Behavioral Sciences,*
+  |  Second Edition (Chapman and Hall/CRC, 2019)
+  |  **Solutions to Exercises of Chapter 1:**
+  |  **Data, Measurement, and Models**
+author: "Kimmo Vehkalahti and Brian S. Everitt"
+date: "8 October 2018"
+output: 
+  pdf_document:
+    number_sections: no
+    toc: no
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Solutions
+
+## Exercise 1.1
+
+One alternative explanation is the systematic bias that may be produced by always using the letter Q for Coke and the letter M for Pepsi. In fact, when the Coca-Cola Company conducted another study in which Coke was put into both glasses, one labeled M and the other Q, the results showed that a majority of people chose the glass labeled M in preference to the glass labeled Q.
+
+## Exercise 1.2
+
+## Exercise 1.3
+
+Clearly, you cannot carry out an experiment in which you assign guns at random to one group of convicted felons and not to another group. So, you need an observational study, although such a study also faces substantial difficulties. It would not be reasonable to estimate the effects of such a law by comparing the rate of criminal violence among convicted felons barred from handgun purchases to the rate among all other individuals permitted to purchase handguns; convicted felons may be more prone to criminal violence and may have greater access to illegally purchased guns than typical purchasers of guns without felony convictions. For some ideas about how the study could be carried out, see Wright et al. (1999). The answer given here is taken from Rosenbaum (2002).
+
+**References:**
+
+Rosenbaum, P. R. (2002). *Observational Studies*, 2nd edition. Springer, New York.
+
+Wright, M. A., Wintemute, G. J. and Rivara, F. P. (1999).
+Effectiveness of denial of handgun purchase to persons believed to be at high risk for firearm violence.
+*American Journal of Public Health*, 89, 88--90.
+
+\pagebreak
+
+## Exercise 1.4
+
+This is not very difficult using Google, for instance!
+
+a. Florence Nightingale
+b. Lloyd George
+c. Joseph Stalin
+d. W. H. Auden
+e. Mr. Justice Streatfield
+f. Logan Pearsall Smith
+g. Banksy
+h. Tom Stoppard
+i. Stephen Jay Gould
+j. William Cowper
+k. Paul Samuelson
+
+## Exercise 1.5
+
+Be suspicious---very, very suspicious!
+
+## Exercise 1.6
+
+You need to convert both temperatures to the Kelvin scale before taking the ratio.
+
+The Kelvin scale is simply 273+centigrade, and centigrade = 5/9(Fahrenheit--32).
+
+So, 110$^\circ$F is 43$^\circ$C, and so, the required ratio is (273+43)/(273+25)=1.06.
+

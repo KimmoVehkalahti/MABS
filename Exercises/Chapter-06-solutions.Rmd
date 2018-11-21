@@ -1,0 +1,166 @@
+---
+title:  |  
+  |  *Multivariate Analysis for the Behavioral Sciences,*
+  |  Second Edition (Chapman and Hall/CRC, 2019)
+  |  **Solutions to Exercises of Chapter 6:**
+  |  **Applying Logistic Regression**
+author: "Kimmo Vehkalahti and Brian S. Everitt"
+date: "10 November 2018"
+output: 
+  pdf_document:
+    number_sections: no
+    toc: no
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Solutions
+
+## Exercise 6.1
+
+```{r, echo=TRUE}
+womensrole <- structure(list(
+    education = c(0L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L, 
+                  16L, 17L, 18L, 19L, 20L, 0L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 
+                  11L, 12L, 13L, 14L, 15L, 16L, 17L, 18L, 19L, 20L),
+  sex = structure(c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 
+                    1L, 1L, 1L, 1L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L,
+                    2L, 2L, 2L, 2L, 2L, 2L, 2L), 
+                  .Label = c("Male", "Female"), class = "factor"),
+  agree = c(4, 2, 4, 6, 5, 13, 25, 27, 75, 29, 32, 36, 115, 31, 28, 9, 15, 3, 1, 2, 3, 4, 
+            1, 0, 6, 10, 14, 17, 26, 91, 30, 55, 50, 190, 17, 18, 7, 13, 3, 0, 1, 2),
+  disagree = c(2, 0, 0, 3, 5, 7, 9, 15, 49, 29, 45, 59, 245, 70, 79, 23, 110, 29, 28, 13, 20,
+               2, 0, 0, 1, 0, 7, 5, 16, 36, 35, 67, 62, 403, 92, 81, 34, 115, 28, 21, 2, 4)),
+.Names = c("education", "sex", "agree", "disagree"),
+
+row.names = c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",
+"16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", 
+"32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42"), class = "data.frame")
+
+head(womensrole)
+
+attach(womensrole)
+#main effects model
+womensrole_glm <- glm(cbind(agree,disagree) ~ sex + education, family = "binomial")
+summary(womensrole_glm)
+
+#interaction model
+womensrole_glm1 <- glm(cbind(agree,disagree) ~ sex * education, family = "binomial")
+summary(womensrole_glm1)
+
+#interaction significant
+
+fitted <- predict(womensrole_glm1, type = "response")
+fittedF <- fitted[sex == "Female"]
+fittedM <- fitted[sex != "Female"]
+pobsv <- agree / (agree + disagree)
+plot(education, pobsv, type = "n", xlab = "Education", ylab = "Probability of agreeing")
+text(education, pobsv, ifelse(sex == "Female", "\\VE", "\\MA"), vfont = c("serif", "plain"), cex = 1.25)
+lines(education[sex == "Female"], fittedF)
+lines(education[sex != "Female"], fittedM, lty = 2)
+legend("topright", c("Fitted(Female)", "Fitted(Male)"), lty = 1:2)
+detach(womensrole)
+```
+The interaction shows that, for fewer years of education, women have a higher probability of agreeing with the statement than men, but when the years of education exceed about 10, then this situation reverses.
+
+\pagebreak
+
+## Exercise 6.3
+
+```{r, echo=TRUE}
+accidents <- structure(list(
+  
+  weight = structure(c(1L, 1L, 1L, 1L, 2L, 2L, 2L, 2L),
+                     .Label = c("Small", "Standard"), class = "factor"),
+  
+  eject = structure(c(1L, 1L, 2L, 2L, 1L, 1L, 2L, 2L),
+                    .Label = c("No", "Yes"), class = "factor"),
+  
+  type = structure(c(1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L),
+                   .Label = c("Collision", "Rollover"), class = "factor"),
+  
+  severely = c(150, 112, 23, 80, 1022, 404, 161, 265),
+  
+  nseverely = c(350, 60, 26, 19, 1878, 148, 111, 22)),
+  
+.Names = c("weight", "eject", "type", "severely", "nseverely"),
+row.names = c(NA, -8L), class = "data.frame")
+
+head(accidents)
+
+attach(accidents)
+accident_glm <- glm(cbind(severely,nseverely) ~ weight + eject + type, family = "binomial")
+summary(accident_glm)
+detach(accidents)
+
+```
+\pagebreak
+
+## Exercise 6.4
+
+```{r, echo=TRUE}
+statistics <- structure(list(
+  
+  result = structure(c(1L, 1L, 2L, 1L, 2L, 2L, 2L, 2L, 2L, 2L, 
+                       2L, 2L, 2L, 2L, 2L, 1L, 2L, 1L, 1L, 2L),
+                     .Label = c("Fail", "Pass"), class = "factor"),
+
+  test = c(525, 533, 545, 582, 581, 576, 572, 609, 559, 543, 
+           576, 525, 574, 582, 574, 471, 595, 557, 557, 584),
+
+  grade = structure(c(2L, 3L, 2L, 1L, 3L, 4L, 2L, 1L, 3L, 4L, 
+                      2L, 1L, 4L, 3L, 2L, 2L, 3L, 1L, 1L, 1L),
+                    .Label = c("A", "B", "C", "D"), class = "factor")),
+
+.Names = c("result", "test", "grade"), row.names = c(NA, -20L), class = "data.frame")
+
+head(statistics)
+
+tail(statistics)
+
+attach(statistics)
+statistics_glm <- glm(result ~ test + grade, family = "binomial")
+summary(statistics_glm)
+
+#find prediction of pass and fail from model and cross tab with actual result
+pred <- predict(statistics_glm, type = "response")
+pred[pred > 0.5] <- "P"
+pred[pred <= 0.5] <- "F"
+
+table(result, pred)
+detach(statistics)
+```
+\pagebreak
+
+## Exercise 6.5
+
+```{r, echo=TRUE}
+menstruation <- structure(list(
+  age = c(11.08, 11.33, 11.58, 11.83, 12.08, 12.33, 12.58, 12.83, 13.08,
+          13.33, 13.58, 14.08, 14.33, 14.58, 15.08, 15.33, 15.58, 17.58),
+  
+  bmens = c(2, 5, 10, 17, 16, 29, 39, 51, 47, 67, 81, 79, 90, 93, 117, 107, 92, 1049),
+  
+  n = c(120, 88, 105, 111, 100, 93, 100, 108, 99, 106, 117, 
+        98, 97, 100, 122, 111, 94, 1049)),
+  
+.Names = c("age", "bmens", "n"), row.names = c(NA, -18L), class = "data.frame")
+
+menstruation
+
+attach(menstruation)
+menstruation_reg <- glm(cbind(bmens, n-bmens) ~ age, family = "binomial")
+summary(menstruation_reg)
+
+plot(age, bmens/n, xlab = "Age (years)", ylab = "Probability of menstruating")
+abline(lm(bmens/n ~ age), lty = 2)
+lines(age, predict(menstruation_reg, type = "response"))
+legend("topleft", c("Logistic", "Linear"), lty = 1:2)
+
+detach(menstruation)
+
+```
+This shows why the linear model is useless and the logistic model is not.
+

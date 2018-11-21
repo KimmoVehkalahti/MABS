@@ -1,0 +1,68 @@
+---
+title:  |  
+  |  *Multivariate Analysis for the Behavioral Sciences,*
+  |  Second Edition (Chapman and Hall/CRC, 2019)
+  |  **Examples of Chapter 5:**
+  |  **Generalized Linear Models**
+author: "Kimmo Vehkalahti and Brian S. Everitt"
+date: "9 November 2018"
+output: 
+  pdf_document:
+    number_sections: no
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+\pagebreak
+
+# Examples
+
+# Table 5.1: The Colonic Polyps Data Giving the Number of Polyps for Two Treatments
+
+```{r, echo=TRUE}
+POLYPS <- read.table("data/polyps.txt", header = TRUE, sep = '\t')
+
+# to make sure that the factor is coded as it should be:
+POLYPS <- within(POLYPS,
+      Treatment <- factor(Treatment, levels = c("placebo", "drug"))
+)
+str(POLYPS)
+# list the whole (small) data:
+POLYPS
+```
+\pagebreak
+
+## Figure 5.1
+
+```{r, echo=TRUE}
+require(ggplot2)
+
+p1 <- ggplot(POLYPS, aes(x = Age, y = Number, shape = Treatment))
+p2 <- p1 + geom_point(size = 3) + scale_shape_manual(values = c(2,1))
+p3 <- p2 + theme_bw() + theme(panel.grid.major = element_blank(),
+                              panel.grid.minor = element_blank())
+p4 <- p3 + theme(legend.position = c(0.8, 0.8))
+p5 <- p4 + scale_y_continuous(name = "Number of polyps") +
+           scale_x_continuous(name = "Age of patient")
+p5
+```
+\pagebreak
+
+## Table 5.2
+
+```{r, echo=TRUE}
+polyps_fit1 <- glm(Number ~ Treatment + Age, data = POLYPS,
+                   family = poisson(link = "log"))
+summary(polyps_fit1)
+```
+\pagebreak
+
+## Table 5.3
+
+```{r, echo=TRUE}
+polyps_fit2 <- glm(Number ~ Treatment + Age, data = POLYPS,
+                   family = quasipoisson(link = "log"))
+summary(polyps_fit2)
+```

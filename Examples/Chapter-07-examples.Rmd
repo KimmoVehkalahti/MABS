@@ -1,0 +1,222 @@
+---
+title:  |  
+  |  *Multivariate Analysis for the Behavioral Sciences,*
+  |  Second Edition (Chapman and Hall/CRC, 2019)
+  |  **Examples of Chapter 7:**
+  |  **Survival Analysis**
+author: "Kimmo Vehkalahti and Brian S. Everitt"
+date: "14 November 2018"
+output: 
+  pdf_document:
+    number_sections: no
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+\pagebreak
+
+# Examples
+
+# Table 7.1: Age at First Sexual Intercourse for Women in Two Diagnostic Groups
+
+```{r, echo=TRUE}
+first_sex <- structure(list(
+  Diagnosis = structure(c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L,
+                          1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L,
+                          1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L,
+                          2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L,
+                          2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L,
+                          2L, 2L, 2L, 2L), .Label = c("RAN", "NC"), class = "factor"),
+  
+  Agefs = c(30, 24, 12, 21, 19, 18, 24, 20, 24, 28, 17, 18, 18, 27, 31, 17, 28, 29, 23,
+            19, 19, 18, 26, 22, 20, 28, 20, 21, 18, 18, 20, 21, 17, 21, 16, 16, 18, 21,
+            17, 17, 15, 13, 15, 18, 16, 19, 14, 16, 17, 16, 17, 18, 16, 16, 16, 17, 16, 
+            19, 19, 17, 18, 20, 16, 16, 17, 17, 17, 18, 16, 16, 19, 19, 18, 17, 19, 16,
+            16, 15, 19, 20, 16, 15, 17, 18),
+  
+  Age = c(30, 24, 18, 42, 19, 39, 30, 30, 33, 38, 17, 18, 18, 27, 31, 17, 28, 29, 23,
+          35, 28, 18, 26, 22, 20, 28, 26, 21, 22, 18, 25, 21, 17, 21, 22, 20, 21, 29, 
+          20, 20, 20, 20, 20, 20, 19, 20, 20, 20, 20, 21, 20, 22, 22, 20, 38, 21, 21, 
+          22, 36, 24, 30, 39, 20, 19, 22, 22, 23, 18, 29, 19, 22, 22, 21, 19, 21, 20, 
+          22, 18, 26, 23, 20, 21, 21, 21), 
+  
+  Status = c(0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 
+             0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 
+             1, 1, 1, 1, 1, 1, 1, 1, 1)), 
+  
+.Names = c("Diagnosis", "Agefs", "Age", "Status"),
+row.names = c(NA, -84L), class = "data.frame")
+
+head(first_sex)
+tail(first_sex)
+```
+\pagebreak
+
+## Table 7.2
+
+```{r, echo=TRUE}
+attach(first_sex)
+library("survival")
+summary(survfit(Surv(Agefs, Status) ~ 1))
+detach(first_sex)
+```
+\pagebreak
+
+## Figure 7.1
+
+```{r, echo=TRUE}
+attach(first_sex)
+plot(survfit(Surv(Agefs, Status) ~ 1), xlab = "Age at first sex (years)", ylab = "Proportion")
+legend("bottomleft", c("Estimated survival function", "Confidence interval (95%)"), lty = 1:2)
+detach(first_sex)
+```
+\pagebreak
+
+## Figure 7.2
+
+The following gives also the log-rank test and Cox regression results that are referred to in the text.
+
+```{r, echo=TRUE}
+attach(first_sex)
+plot(survfit(Surv(Agefs,Status) ~ Diagnosis), xlab = "Age at first sex (years)",
+     ylab = "Proportion", lty = 1:2)
+legend("bottomleft", c("RAN", "NC"), lty = 1:2)
+
+# logrank test
+survdiff(Surv(Agefs, Status) ~ Diagnosis)
+#cox regression
+sex_cox <- coxph(Surv(Agefs, Status) ~ Diagnosis)
+summary(sex_cox)
+
+contrasts(Diagnosis)
+detach(first_sex)
+```
+\pagebreak
+
+# Table 7.3: Data for Heroin Addicts Being Treated with Methadone
+
+```{r, echo=TRUE}
+heroin_dat <- structure(list(
+  Clinic = structure(c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 
+                       1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 
+                       1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 
+                       1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L,
+                       1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 
+                       1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 
+                       1L, 1L, 1L, 1L, 1L, 1L, 1L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L,
+                       2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 
+                       2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L,
+                       2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 
+                       2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 1L, 1L, 1L,
+                       2L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 
+                       1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 
+                       2L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 2L, 
+                       2L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 2L, 1L, 1L, 1L, 
+                       1L, 1L, 1L, 2L, 1L, 2L, 2L, 1L, 1L, 2L, 2L, 1L, 1L), 
+                     .Label = c("Clinic 1", "Clinic 2"), class = "factor"), 
+  
+  Status = c(1, 1, 1, 1, 1, 1, 1, 0, 1, 1,0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 
+             1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 
+             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 
+             1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 
+             1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 
+             1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 
+             0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 
+             1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 
+             0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 
+             0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1),
+  
+  TimeDays = c(428, 275, 262, 183, 259, 714, 438, 796, 892, 393, 161, 836, 523, 612,
+212, 399, 771, 514, 512, 624, 209, 341, 299, 826, 262, 566, 368, 302, 602, 652,
+293, 564, 394, 755, 591, 787, 739, 550, 837, 612, 581, 523, 504, 785, 774, 560, 
+160, 482, 518, 683, 147, 563, 646, 899, 857, 180, 452, 760, 496, 258, 181, 386, 
+439, 563, 337, 613, 192, 405, 667, 905, 247, 821, 821, 517, 346, 294, 244, 95, 376,
+212, 96, 532, 522, 679, 408, 840, 148, 168, 489, 541, 205, 475, 237, 517, 749, 150, 
+465, 708, 713, 146, 450, 555, 460, 53, 122, 35, 532, 684, 769, 591, 769, 609, 932, 
+932, 587, 26, 72, 641, 367, 633, 661, 232, 13, 563, 969, 1052, 944, 881, 190, 79, 884,
+170, 286, 358, 326, 769, 161, 564, 268, 611, 322, 1076, 2, 788, 575, 109, 730, 790, 
+456, 231, 143, 86, 1021, 684, 878, 216, 808, 268, 222, 683, 496, 389, 126, 17, 350, 
+531, 317, 461, 37, 167, 358, 49, 457, 127, 7, 29, 62, 150, 223, 129, 204, 129, 581, 176,
+30, 41, 543, 210, 193, 434, 367, 348, 28, 337, 175, 149, 546, 84, 283, 533, 207, 216, 
+28, 67, 62, 111, 257, 136, 342, 41, 531, 98, 145, 50, 53, 103, 2, 157, 75, 19, 35, 394, 
+117, 175, 180, 314, 480, 325, 280, 204, 366, 531, 59, 33, 540, 551, 90, 47),
+
+  Prison = structure(c(1L, 2L, 1L, 1L, 2L, 1L, 2L, 2L, 1L,
+    2L, 2L, 2L, 1L, 1L, 2L, 2L, 2L, 2L, 1L, 2L, 2L, 2L, 1L, 1L,
+    2L, 2L, 2L, 2L, 1L, 1L, 1L, 1L, 2L, 2L, 1L, 1L, 1L, 2L, 1L,
+    1L, 1L, 1L, 2L, 2L, 2L, 1L, 1L, 1L, 1L, 1L, 1L, 2L, 2L, 1L,
+    1L, 2L, 1L, 1L, 1L, 2L, 2L, 1L, 1L, 1L, 1L, 2L, 2L, 1L, 1L,
+    1L, 1L, 1L, 2L, 1L, 2L, 1L, 2L, 2L, 2L, 1L, 1L, 1L, 2L, 1L,
+    1L, 1L, 2L, 1L, 1L, 1L, 1L, 2L, 1L, 1L, 1L, 2L, 1L, 2L, 1L,
+    1L, 1L, 1L, 1L, 2L, 2L, 2L, 1L, 1L, 2L, 1L, 2L, 2L, 2L, 2L,
+    1L, 1L, 2L, 1L, 1L, 1L, 1L, 2L, 2L, 1L, 1L, 1L, 2L, 1L, 2L,
+    1L, 2L, 1L, 1L, 1L, 2L, 2L, 1L, 2L, 2L, 2L, 1L, 2L, 2L, 1L,
+    1L, 2L, 2L, 1L, 2L, 2L, 2L, 2L, 1L, 2L, 2L, 1L, 1L, 2L, 1L,
+    1L, 1L, 1L, 2L, 2L, 1L, 2L, 2L, 2L, 1L, 2L, 1L, 1L, 2L, 1L,
+    2L, 2L, 1L, 2L, 2L, 2L, 2L, 2L, 1L, 1L, 1L, 1L, 1L, 2L, 2L,
+    1L, 1L, 2L, 1L, 1L, 2L, 2L, 2L, 1L, 2L, 1L, 2L, 1L, 1L, 2L,
+    2L, 1L, 2L, 2L, 1L, 1L, 2L, 1L, 2L, 1L, 1L, 2L, 2L, 2L, 2L,
+    2L, 1L, 2L, 1L, 2L, 2L, 1L, 1L, 2L, 1L, 1L, 1L, 2L, 2L, 2L,
+    1L, 1L, 1L, 1L),
+    .Label = c("No prison record", "Prison record"), class = "factor"),
+  
+  Dose = c(50, 55, 55, 30, 65, 55, 65,
+    60, 50, 65, 80, 60, 55, 70, 60, 60, 75, 80, 80, 80, 60, 60,
+    55, 80, 65, 45, 55, 50, 60, 80, 65, 60, 55, 65, 55, 80, 60,
+    60, 60, 65, 70, 60, 60, 80, 65, 65, 35, 30, 65, 50, 65, 70,
+    60, 60, 60, 70, 60, 60, 65, 40, 60, 60, 80, 75, 65, 60, 80,
+    80, 50, 80, 70, 80, 75, 45, 60, 65, 60, 60, 55, 40, 70, 80,
+    70, 35, 50, 80, 65, 65, 80, 80, 50, 75, 45, 70, 70, 80, 65,
+    60, 50, 50, 55, 80, 50, 60, 60, 40, 70, 65, 70, 70, 40, 100,
+    80, 80, 110, 40, 40, 70, 70, 70, 40, 70, 60, 70, 80, 80,
+    80, 80, 50, 40, 50, 40, 45, 60, 60, 40, 40, 80, 70, 40, 55,
+    80, 40, 70, 80, 70, 80, 90, 70, 60, 70, 40, 80, 80, 60, 100,
+    60, 40, 40, 100, 40, 55, 75, 40, 60, 65, 50, 75, 60, 55,
+    45, 60, 40, 20, 40, 60, 40, 60, 40, 40, 65, 50, 65, 55, 60,
+    60, 40, 50, 70, 55, 45, 60, 50, 40, 60, 80, 50, 45, 80, 55,
+    50, 50, 50, 50, 60, 55, 60, 55, 60, 40, 45, 40, 55, 50, 50,
+    50, 60, 60, 55, 40, 60, 80, 40, 60, 60, 70, 50, 60, 90, 50,
+    55, 50, 45, 60, 80, 65, 40, 45)),
+
+.Names = c("Clinic", "Status", "TimeDays", "Prison", "Dose"),
+row.names = c(NA, -238L), class = "data.frame")
+
+head(heroin_dat, n = 10)
+```
+\pagebreak
+
+## Figure 7.4
+
+```{r, echo=TRUE}
+attach(heroin_dat)
+plot(survfit(Surv(TimeDays, Status) ~ Clinic), xlab = "Time (days)", ylab = "Proportion",
+     lty = c(2,1)) # 1:2
+legend("bottomleft", c("Clinic 1", "Clinic 2"), lty = c(2,1)) # 1:2
+contrasts(Clinic)
+```
+\pagebreak
+
+## Table 7.4
+
+```{r, echo=TRUE}
+heroin_cox <- coxph(Surv(TimeDays, Status) ~ Prison + Dose + Clinic)
+summary(heroin_cox)
+```
+\pagebreak
+
+Other results mentioned in the text following Table 7.4:
+
+```{r, echo=TRUE}
+# Backward elimination etc.
+step(heroin_cox, direction="backward")
+
+heroin_zph <- cox.zph(heroin_cox)
+heroin_zph
+
+# For Exercise 7.1, use strata as follows:
+#heroin_cox <- coxph(Surv(TimeDays, Status) ~ Prison + Dose + strata(Clinic))
+```
+

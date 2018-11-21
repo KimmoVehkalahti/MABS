@@ -1,0 +1,41 @@
+---
+title:  |  
+  |  *Multivariate Analysis for the Behavioral Sciences,*
+  |  Second Edition (Chapman and Hall/CRC, 2019)
+  |  **Exercises of Chapter 8:**
+  |  **Analysis of Longitudinal Data I: Graphical Displays and Summary Measure Approach**
+author: "Kimmo Vehkalahti and Brian S. Everitt"
+date: "1 October 2018"
+output: 
+  pdf_document:
+    number_sections: no
+    toc: no
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Exercises
+
+## Exercise 8.1
+
+See Table 8.2 in the book and use the BPRS data, modifying the related R code given in the **Examples of Chapter 8**.
+
+## Exercise 8.2
+
+Use the PAIN data, modifying the related R code given in the **Examples of Chapter 8**.
+
+## Exercise 8.3
+
+Use the skin resistance data (see below) and modify the R codes given in the **Examples of Chapter 8** to create suitable graphics and to analyse the data.
+
+```{r, echo=TRUE}
+library(tidyr); library(dplyr); library(ggplot2)
+
+SKIN <- read.table("data/skin.txt", header = TRUE, sep = "\t")
+
+glimpse(SKIN)
+SKIN
+
+```
