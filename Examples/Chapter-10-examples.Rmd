@@ -1,0 +1,171 @@
+---
+title:  |  
+  |  *Multivariate Analysis for the Behavioral Sciences,*
+  |  Second Edition (Chapman and Hall/CRC, 2019)
+  |  **Examples of Chapter 10:**
+  |  **Analysis of Longitudinal Data III: Non-Normal Responses**
+author: "Kimmo Vehkalahti and Brian S. Everitt"
+date: "20 November 2018"
+output: 
+  pdf_document:
+    number_sections: no
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+\pagebreak
+
+# Examples
+
+ENSIN: T 10.3 ja 10.4: using BtB data!
+
+vasta sitten:
+
+# Table 10.1: Respiratory Disorder Data
+
+```{r, echo=TRUE}
+```
+\pagebreak
+
+(tähän väliin Fig. 10.2 Tables 10.5, 10.6, 10.7, 10.10) - all with respiratory data
+
+# Table 10.2: Data from a Clinical Trial of Patients Suffering from Epilepsy
+
+(tän jälkeen Fig 10.3, Tables 10.8, 10.9, 10.11, 10.12) - all with epilepsy data
+
+```{r, echo=TRUE}
+```
+
+wanhoja pohjia ch9:Stä:
+
+
+\pagebreak
+
+## Figure 9.1
+
+```{r, echo=TRUE}
+```
+\pagebreak
+
+## Table 9.3
+
+```{r, echo=TRUE}
+```
+\pagebreak
+
+## Figure 9.2
+
+```{r, echo=TRUE}
+```
+\pagebreak
+
+## Figure 9.3
+
+```{r, echo=TRUE, fig.width=10, fig.height=10}
+```
+\pagebreak
+
+## Table 9.4
+
+```{r, echo=TRUE}
+```
+\pagebreak
+
+## Table 9.5
+
+```{r, echo=TRUE}
+```
+\pagebreak
+
+## Table 9.6
+
+```{r, echo=TRUE}
+```
+\pagebreak
+
+## Figure 9.4
+
+```{r, echo=TRUE, fig.width=3, fig.height=4}
+
+```
+\pagebreak
+
+# Table 9.7: Patients in Each Treatment Group of the “Beat the Blues” (BtB) Clinical Trial of CBT for Depression
+
+```{r, echo=TRUE}
+library(tidyr); library(dplyr); library(ggplot2)
+
+BtB <- read.table("data/BtB.txt", header = TRUE, sep = '\t')
+
+# to make sure that the factor levels are logical (esp. Treatment):
+BtB <- within(BtB, {
+       Drug <- factor(Drug, levels=c("No", "Yes")) # default
+     Length <- factor(Length, levels=c("<6m", ">6m")) # default
+  Treatment <- factor(Treatment, levels=c("TAU", "BtheB")) # NOT default!
+})
+
+glimpse(BtB); head(BtB); tail(BtB)
+
+```
+\pagebreak
+
+## Figure 9.5
+
+```{r, echo=TRUE}
+# Convert data to long form, including the baseline BDI measurement:
+BtBL0 <- gather(BtB, key = Visit, value = BDI, BDIpre, BDI2m, BDI4m, BDI6m, BDI8m)
+
+glimpse(BtBL0); head(BtBL0); tail(BtBL0)
+
+p1 <- ggplot(BtBL0, aes(x = factor(Visit), y = BDI, fill = Treatment))
+p2 <- p1 + geom_boxplot()
+p3 <- p2 + facet_grid(Treatment ~., labeller = label_parsed)
+p4 <- p3 + theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+p5 <- p4 + theme(legend.position = "none")
+p6 <- p5 + scale_x_discrete(name = "", limits = c("BDIpre", "BDI2m", "BDI4m", "BDI6m", "BDI8m")) # BDIpre first!
+p6
+# p7 <- p6 + scale_fill_grey(start = 1, end = 1) # B&W in the book
+# p7
+```
+\pagebreak
+
+## Figure 9.6
+
+```{r, echo=TRUE, fig.width=10, fig.height=10}
+pairs(BtB[, -c(1:4)], cex = 0.8, cex.labels = 1.0)
+```
+\pagebreak
+
+## Table 9.8
+
+```{r, echo=TRUE}
+# Convert data to long form for the analyses, adding Time:
+BtBL <- gather(BtB, key = Visit, value = BDI, BDI2m, BDI4m, BDI6m, BDI8m) %>%
+  mutate(Time = as.integer(substr(Visit, 4, 4))) 
+
+glimpse(BtBL); head(BtBL); tail(BtBL)
+
+BtB_fit0 <- lm(BDI ~ BDIpre + Time + Treatment + Drug + Length, data = BtBL, na.action = na.omit)
+summary(BtB_fit0)
+```
+\pagebreak
+
+## Table 9.9
+
+```{r, echo=TRUE}
+library("lme4")
+
+BtB_fit1 <- lmer(BDI ~ BDIpre + Time + Treatment + Drug + Length + (1 | Subject), 
+                 data = BtBL, na.action = na.omit)
+summary(BtB_fit1)
+```
+\pagebreak
+```{r, echo=TRUE}
+BtB_fit2 <- lmer(BDI ~ BDIpre + Time + Treatment + Drug + Length + (Time | Subject), 
+                 data = BtBL, na.action = na.omit)
+summary(BtB_fit2)
+
+anova(BtB_fit2, BtB_fit1)
+```
