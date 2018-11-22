@@ -117,7 +117,7 @@ pairs(states, panel = function(x,y) text(x, y,
 
 ```{r, echo=TRUE}
 #install.packages("MVA")
-require("MVA")
+library("MVA")
 
 pairs(states, panel = function(x,y) {
    text(x, y, abbreviate(row.names(states)), cex = 0.6)

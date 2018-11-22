@@ -71,7 +71,8 @@ pie(band, density = -10, labels = labels1, col = 0, lwd = 2)
 ## Figure 2.4
 
 ```{r, echo=TRUE}
-require("lattice")
+#install.packages("lattice")
+library("lattice")
 dotplot(1:10 ~ band, ylab = "Band", xlab = "Percentage", lwd = 3)
 ```
 
@@ -80,7 +81,7 @@ dotplot(1:10 ~ band, ylab = "Band", xlab = "Percentage", lwd = 3)
 ## Figure 2.5
 
 ```{r, echo=TRUE}
-require("lattice")
+library("lattice")
 dimnames(da) <- list(labels, c("Drinkers", "Abstainers"))
 dotplot(da, groups = FALSE, xlab = "Percentage", ylab = "Crime")
 ```
@@ -111,7 +112,7 @@ Sarkar, D. (2008). *Lattice: Multivariate Data Visualization with R*, Springer.
 http://lmdvr.r-forge.r-project.org/
 
 ```{r, echo=TRUE}
-require("lattice")
+library("lattice")
 # B&W version for the book:
 #trellis.device(color = FALSE)
 barchart(Class ~ Freq | Sex + Age, data = as.data.frame(Titanic),
@@ -130,7 +131,7 @@ Sarkar, D. (2008). *Lattice: Multivariate Data Visualization with R*, Springer.
 http://lmdvr.r-forge.r-project.org/
 
 ```{r, echo=TRUE}
-require("lattice")
+library("lattice")
 # B&W version for the book:
 #trellis.device(color = FALSE)
 barchart(Class ~ Freq | Sex + Age, data = as.data.frame(Titanic),
@@ -334,7 +335,7 @@ symbols(age, time, circles = extro, inches = 0.4, add = TRUE)
 
 ```{r, echo=TRUE}
 #install.packages("MVA")
-require("MVA")
+library("MVA")
 bvbox(cbind(age, time), mtitle = "", xlab = "Age (years)",
       ylab = "Time spent looking after car (mins)")
 ```
@@ -344,7 +345,7 @@ bvbox(cbind(age, time), mtitle = "", xlab = "Age (years)",
 
 ```{r, echo=TRUE}
 #install.packages("MVA")
-require("MVA")
+library("MVA")
 bvbox(cbind(extro, time), mtitle = "", xlab = "Extroversion score",
       ylab = "Time spent looking after car (mins)")
 ```
@@ -377,7 +378,7 @@ pairs(resis)
 
 ```{r, echo=TRUE}
 #install.packages("MVA")
-require("MVA")
+library("MVA")
 bvbox(resis[, c(1, 2)], mtitle = "",
       xlab = "Resistance measured by first electrode",
       ylab = "Resistance as measured by second electrode")
@@ -420,7 +421,7 @@ Sarkar, D. (2008). *Lattice: Multivariate Data Visualization with R*, Springer.
 http://lmdvr.r-forge.r-project.org/
 
 ```{r, echo=TRUE}
-require(lattice)
+library(lattice)
 data(postdoc, package = "latticeExtra")
 barchart(prop.table(postdoc, margin = 1), xlab = "Proportion",
          auto.key = list(adj = 1))
@@ -436,7 +437,7 @@ Sarkar, D. (2008). *Lattice: Multivariate Data Visualization with R*, Springer.
 http://lmdvr.r-forge.r-project.org/
 
 ```{r, echo=TRUE}
-require(lattice)
+library(lattice)
 dotplot(prop.table(postdoc, margin = 1), groups = FALSE,
         xlab = "Proportion", par.strip.text = list(abbreviate = TRUE, minlength = 10))
 ```
@@ -451,7 +452,7 @@ Sarkar, D. (2008). *Lattice: Multivariate Data Visualization with R*, Springer.
 http://lmdvr.r-forge.r-project.org/
 
 ```{r, echo=TRUE}
-require(lattice)
+library(lattice)
 dotplot(prop.table(postdoc, margin = 1), groups = FALSE,
         index.cond = function(x, y) median(x),
         xlab = "Proportion", layout = c(1, 5), aspect = 0.15,
@@ -474,7 +475,7 @@ Sarkar, D. (2008). *Lattice: Multivariate Data Visualization with R*, Springer.
 http://lmdvr.r-forge.r-project.org/
 
 ```{r, echo=TRUE}
-require(lattice)
+library(lattice)
 splom( ~ USArrests[c(1, 2, 4)] | state.region, pscales = 0,
        type = c("g", "p", "smooth"))
 ```
@@ -484,7 +485,7 @@ splom( ~ USArrests[c(1, 2, 4)] | state.region, pscales = 0,
 
 ```{r, echo=TRUE, out.width = '45%'}
 RATES <- read.table("data/deathrates.txt", sep = ' ' , header = TRUE)
-require(ggplot2)
+library(ggplot2)
 
 p1 <- ggplot(RATES, aes(x = year, y = rate))
 p2 <- p1 + geom_line() + geom_point(shape=22, size=2, fill = "black")
@@ -507,7 +508,7 @@ p5a; p5b
 Dalal, S. R., Fowlkes, E. B. and Hoadley, B. (1988). Risk analysis of the space shuttle: Pre-Challenger prediction of failure. *Journal of the American Statistical Association*, 84, 945--957.
 
 ```{r, echo=TRUE}
-require(dplyr)
+library(dplyr)
 orings <- read.table("data/orings.txt", header = TRUE)
 orings
 orings123 <- orings %>% filter(NumInc > 0.5)
@@ -516,7 +517,7 @@ orings123 <- orings %>% filter(NumInc > 0.5)
 \pagebreak
 
 ```{r, echo=TRUE}
-require(ggplot2)
+library(ggplot2)
 
 xlab = expression("Calculated Joint Temperature " ( degree*F))
 ylab = "Number of Incidences"
@@ -533,7 +534,7 @@ p3a
 ## Figure 2.39
 
 ```{r, echo=TRUE}
-require(ggplot2)
+library(ggplot2)
 # using the complete data (compare with Fig. 2.38)
 p1 <- ggplot(orings, aes(x = TempF, y = NumIncJ))
 p2 <- p1 + geom_point(shape = 1, size = 3) + labs(x = xlab,

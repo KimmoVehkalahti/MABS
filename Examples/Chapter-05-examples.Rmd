@@ -37,7 +37,7 @@ POLYPS
 ## Figure 5.1
 
 ```{r, echo=TRUE}
-require(ggplot2)
+library(ggplot2)
 
 p1 <- ggplot(POLYPS, aes(x = Age, y = Number, shape = Treatment))
 p2 <- p1 + geom_point(size = 3) + scale_shape_manual(values = c(2,1))
