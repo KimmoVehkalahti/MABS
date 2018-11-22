@@ -5,7 +5,7 @@ title:  |
   |  **Examples of Chapter 10:**
   |  **Analysis of Longitudinal Data III: Non-Normal Responses**
 author: "Kimmo Vehkalahti and Brian S. Everitt"
-date: "20 November 2018"
+date: "22 November 2018"
 output: 
   pdf_document:
     number_sections: no
@@ -19,84 +19,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Examples
 
-ENSIN: T 10.3 ja 10.4: using BtB data!
+# Beat the Blues Revisited
 
-
-vasta sitten:
-
-# Table 10.1: Respiratory Disorder Data
+Using the Beat the Blues data introduced in **Chapter 8**:
 
 ```{r, echo=TRUE}
-```
-\pagebreak
-
-(tähän väliin Fig. 10.2 Tables 10.5, 10.6, 10.7, 10.10) - all with respiratory data
-
-# Table 10.2: Data from a Clinical Trial of Patients Suffering from Epilepsy
-
-(tän jälkeen Fig 10.3, Tables 10.8, 10.9, 10.11, 10.12) - all with epilepsy data
-
-```{r, echo=TRUE}
-```
-
-wanhoja pohjia ch9:Stä:
-
-
-\pagebreak
-
-## Figure 9.1
-
-```{r, echo=TRUE}
-```
-\pagebreak
-
-## Table 9.3
-
-```{r, echo=TRUE}
-```
-\pagebreak
-
-## Figure 9.2
-
-```{r, echo=TRUE}
-```
-\pagebreak
-
-## Figure 9.3
-
-```{r, echo=TRUE, fig.width=10, fig.height=10}
-```
-\pagebreak
-
-## Table 9.4
-
-```{r, echo=TRUE}
-```
-\pagebreak
-
-## Table 9.5
-
-```{r, echo=TRUE}
-```
-\pagebreak
-
-## Table 9.6
-
-```{r, echo=TRUE}
-```
-\pagebreak
-
-## Figure 9.4
-
-```{r, echo=TRUE, fig.width=3, fig.height=4}
-
-```
-\pagebreak
-
-# Table 9.7: Patients in Each Treatment Group of the “Beat the Blues” (BtB) Clinical Trial of CBT for Depression
-
-```{r, echo=TRUE}
-library(tidyr); library(dplyr); library(ggplot2)
+library(tidyr); library(dplyr);
 
 BtB <- read.table("data/BtB.txt", header = TRUE, sep = '\t')
 
@@ -109,64 +37,250 @@ BtB <- within(BtB, {
 
 glimpse(BtB); head(BtB); tail(BtB)
 
-```
-\pagebreak
-
-## Figure 9.5
-
-```{r, echo=TRUE}
-# Convert data to long form, including the baseline BDI measurement:
-BtBL0 <- gather(BtB, key = Visit, value = BDI, BDIpre, BDI2m, BDI4m, BDI6m, BDI8m)
-
-glimpse(BtBL0); head(BtBL0); tail(BtBL0)
-
-p1 <- ggplot(BtBL0, aes(x = factor(Visit), y = BDI, fill = Treatment))
-p2 <- p1 + geom_boxplot()
-p3 <- p2 + facet_grid(Treatment ~., labeller = label_parsed)
-p4 <- p3 + theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
-p5 <- p4 + theme(legend.position = "none")
-p6 <- p5 + scale_x_discrete(name = "", limits = c("BDIpre", "BDI2m", "BDI4m", "BDI6m", "BDI8m")) # BDIpre first!
-p6
-# p7 <- p6 + scale_fill_grey(start = 1, end = 1) # B&W in the book
-# p7
-```
-\pagebreak
-
-## Figure 9.6
-
-```{r, echo=TRUE, fig.width=10, fig.height=10}
-pairs(BtB[, -c(1:4)], cex = 0.8, cex.labels = 1.0)
-```
-\pagebreak
-
-## Table 9.8
-
-```{r, echo=TRUE}
 # Convert data to long form for the analyses, adding Time:
 BtBL <- gather(BtB, key = Visit, value = BDI, BDI2m, BDI4m, BDI6m, BDI8m) %>%
   mutate(Time = as.integer(substr(Visit, 4, 4))) 
 
 glimpse(BtBL); head(BtBL); tail(BtBL)
 
-BtB_fit0 <- lm(BDI ~ BDIpre + Time + Treatment + Drug + Length, data = BtBL, na.action = na.omit)
-summary(BtB_fit0)
+# important to order the data with respect to the subjects:
+BtBLSORT <- BtBL %>% 
+  arrange(Subject)
+
+head(BtBLSORT); tail(BtBLSORT)
 ```
 \pagebreak
 
-## Table 9.9
+## Table 10.3
 
 ```{r, echo=TRUE}
+# install.packages("gee")
+library("gee")
+
+BtB_gee1 <- gee(BDI ~ BDIpre + Time + Treatment + Drug + Length, id = Subject, 
+                data = BtBLSORT, family = gaussian, corstr = "independence")
+summary(BtB_gee1)
+```
+\pagebreak
+
+## Table 10.4
+
+```{r, echo=TRUE}
+BtB_gee2 <- gee(BDI ~ BDIpre + Time + Treatment + Drug + Length, id = Subject,
+                data = BtBLSORT, family = gaussian, corstr = "exchangeable")
+summary(BtB_gee2)
+```
+\pagebreak
+
+# Table 10.1: Respiratory Disorder Data
+
+```{r, echo=TRUE}
+library(tidyr); library(dplyr); 
+# install.packages("HSAUR3")
+library("HSAUR3")
+data("respiratory", package = "HSAUR3")
+RESPL <- respiratory # (data are readily given in long form)
+glimpse(RESPL); head(RESPL, n = 5)
+
+RESPL <- within(RESPL, {
+     levels(gender) <- c("male", "female") # see the original article by Davis (1991)
+     status <- as.numeric(status) - 1 # for converting to wide form below
+})
+head(RESPL, n = 5)
+
+# convert data to WIDE form:
+# (sep: set valid names month0:month4 here; otherwise just 0:4)
+RESP <- RESPL %>% 
+  spread(key = month, value = status, sep = "") %>% 
+  arrange(subject)
+
+glimpse(RESP); head(RESP, n = 5)
+
+# back to long form; leave month0 for baseline:
+RESPL <- gather(RESP, key = months, value = status, month1:month4) %>%
+  mutate(month = as.integer(substr(months, 6, 6))) %>% 
+  rename(baseline = month0) %>% 
+  arrange(subject)
+
+glimpse(RESPL); head(RESPL, n = 5)
+```
+\pagebreak
+
+## Figure 10.2
+
+```{r, echo=TRUE}
+n = dim(RESP)[1]
+RP <- RESP %>%
+  group_by(treatment) %>%
+  summarise(m0 = 100*sum(month0)/n, 
+            m1 = 100*sum(month1)/n, 
+            m2 = 100*sum(month2)/n, 
+            m3 = 100*sum(month3)/n, 
+            m4 = 100*sum(month4)/n ) %>%
+  select(-treatment) %>%
+  ungroup()
+
+RP2 <- cbind(RP[1, ], RP[2, ])
+month <- rep(1:5, times = 2)
+treatment <- rep(0:1, each = 5)
+RPos <- as.data.frame(cbind(treatment, month, t(RP2)))
+row.names(RPos) <- 1:10
+names(RPos) <- c("treatment", "month", "positive")
+RPos$treatment <- factor(RPos$treatment, labels = c("placebo", "treatment"))
+
+library(ggplot2)
+
+p1 <- ggplot(RPos, aes(x = month, y = positive, fill = treatment))
+p2 <- p1 + geom_bar(position = "dodge", stat = "identity")
+p3 <- p2 + scale_x_continuous(name = "", breaks = 1:5, 
+                labels = c("Baseline", "Month 1", "Month 2", "Month 3", "Month 4"))
+p4 <- p3 + theme_bw() + theme(panel.grid.major = element_blank(), 
+                              panel.grid.minor = element_blank())
+p5 <- p4 + scale_y_continuous(name = "Positive responses (%)")
+p6 <- p5 + scale_fill_grey(start = 0.5, end = 0)
+p6
+```
+\pagebreak
+
+## Table 10.5
+
+```{r, echo=TRUE}
+resp_gee1 <- gee(status ~ age, data = RESPL, family = binomial, id = subject, 
+                 corstr = "independence", scale.fix = TRUE, scale.value = 1)
+summary(resp_gee1)
+```
+\pagebreak
+
+## Table 10.6
+
+```{r, echo=TRUE}
+resp_gee2 <- gee(status ~ age, data = RESPL, family = binomial, id = subject,
+                 corstr = "exchangeable", scale.fix = TRUE, scale.value = 1)
+summary(resp_gee2)
+```
+\pagebreak
+
+## Table 10.7
+
+```{r, echo=TRUE}
+formula3 <- status ~ age + month + baseline + centre + treatment + gender
+resp_gee3 <- gee(formula3, data = RESPL, family = binomial, id = subject, 
+                 corstr = "exchangeable", scale.fix = TRUE, scale.value = 1)
+summary(resp_gee3)
+```
+\pagebreak
+
+## Table 10.10
+
+```{r, echo=TRUE}
+# install.packages("lme4")
 library("lme4")
 
-BtB_fit1 <- lmer(BDI ~ BDIpre + Time + Treatment + Drug + Length + (1 | Subject), 
-                 data = BtBL, na.action = na.omit)
-summary(BtB_fit1)
+formula4 <- status ~ age + month + baseline + centre + treatment + gender + (1 | subject)
+resp_glmer <- glmer(formula4, data = RESPL, family = binomial)
+summary(resp_glmer)
 ```
 \pagebreak
-```{r, echo=TRUE}
-BtB_fit2 <- lmer(BDI ~ BDIpre + Time + Treatment + Drug + Length + (Time | Subject), 
-                 data = BtBL, na.action = na.omit)
-summary(BtB_fit2)
 
-anova(BtB_fit2, BtB_fit1)
+# Table 10.2: Data from a Clinical Trial of Patients Suffering from Epilepsy
+
+```{r, echo=TRUE}
+library("HSAUR3")
+EPIL <- epilepsy # (data are readily given in long form)
+glimpse(EPIL); head(EPIL)
+
+# convert data to WIDE form:
+# (sep: set valid names month0:month4 here! otherwise just 0:4)
+
+EPI <- EPIL %>% 
+  spread(key = period, value = seizure.rate, sep = "") %>% 
+  arrange(subject)
+
+glimpse(EPI); head(EPI)
+
+# correct the baseline when converting to long form:
+
+EPIL <- gather(EPI, key = periods, value = seizure.rate, period1:period4) %>%
+  mutate( base2 = base/4, week = as.integer(substr(periods, 7, 7)) ) %>% 
+  arrange(subject)
+
+glimpse(EPIL); head(EPIL)
+```
+\pagebreak
+
+## Figure 10.3
+
+```{r, echo=TRUE}
+# Convert data to long form, including the baseline;
+# correct the baseline first:
+EPI0 <- EPI %>% 
+  mutate(base2 = base/4)
+
+EPIL0 <- gather(EPI0, key = periods, value = seizure.rate, base2, period1:period4) %>% 
+  arrange(subject)
+
+glimpse(EPIL0); head(EPIL0)
+
+# Mark some of the outliers:
+# https://stackoverflow.com/questions/33524669/labeling-outliers-of-boxplots-in-r
+is_outlier <- function(x) {
+  # changed the upper coeff from 1.5 to 3.5 (only more extreme observations highlighted)
+  return(x < quantile(x, 0.25) - 1.5 * IQR(x) | x > quantile(x, 0.75) + 3.5 * IQR(x))
+}
+# use subject id (not seizure.rate itself!) for identification:
+EPIL0 <- EPIL0 %>%
+  mutate(outlier = ifelse(is_outlier(seizure.rate), subject, as.numeric(NA)))
+
+p1 <- ggplot(EPIL0, aes(x = factor(periods), y = seizure.rate, fill = treatment))
+p2 <- p1 + geom_boxplot() + geom_text(aes(label = outlier), na.rm = TRUE, hjust = -0.6)
+p3 <- p2 + facet_grid(treatment ~ ., labeller = label_parsed)
+p4 <- p3 + theme_bw() + theme(panel.grid.major = element_blank(), 
+                              panel.grid.minor = element_blank())
+p5 <- p4 + theme(legend.position = "none")
+p6 <- p5 + scale_x_discrete(name = "", 
+                            labels = c("Baseline", "Time 1", "Time 2", "Time 3", "Time 4"))
+p7 <- p6 + scale_y_continuous(name = "Seizure rate (count)")
+p8 <- p7 + scale_fill_grey(start = 1, end = 1) # B&W for the book
+p7; p8
+```
+
+## Table 10.8
+
+```{r, echo=TRUE}
+t1 <- tapply(EPIL0$seizure.rate, EPIL0$period, mean)
+t2 <- tapply(EPIL0$seizure.rate, EPIL0$period, var)
+t1 <- as.data.frame(t1)
+t2 <- as.data.frame(t2)
+
+tab108 <- cbind(t1, t2)
+names(tab108) = c("mean", "variance")
+tab108
+```
+\pagebreak
+
+## Table 10.9
+
+```{r, echo=TRUE}
+formula5 <- seizure.rate ~ week + age + log(base2) + treatment
+epil_gee1 <- gee(formula5, data = EPIL, family = "poisson", id = subject, 
+                 corstr = "exchangeable", scale.fix = FALSE)
+summary(epil_gee1)
+```
+\pagebreak
+
+## Table 10.11
+
+```{r, echo=TRUE}
+formula6 <- seizure.rate ~ week + age + log(base2) + treatment + (1 | subject)
+epil_glmm <- glmer(formula6, data = EPIL, family = "poisson")
+summary(epil_glmm)
+```
+\pagebreak
+
+## Table 10.12
+
+```{r, echo=TRUE}
+formula7 <- seizure.rate ~ week + age + log(base2) + treatment + (1 + week | subject)
+epil_glmm2 <- glmer(formula7, data = EPIL, family = "poisson")
+summary(epil_glmm2)
 ```

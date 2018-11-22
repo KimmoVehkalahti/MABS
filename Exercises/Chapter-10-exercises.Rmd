@@ -5,7 +5,7 @@ title:  |
   |  **Exercises of Chapter 10:**
   |  **Analysis of Longitudinal Data III: Non-Normal Responses**
 author: "Kimmo Vehkalahti and Brian S. Everitt"
-date: "20 November 2018"
+date: "22 November 2018"
 output: 
   pdf_document:
     number_sections: no
@@ -22,7 +22,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Use the epilepsy data, modifying the related R code given in the **Examples of Chapter 10**.
 
-
 ## Exercise 10.2
 
 Use both the respiratory and epilepsy data sets, modifying the related R code given in the **Examples of Chapter 10**.
@@ -31,7 +30,10 @@ Use both the respiratory and epilepsy data sets, modifying the related R code gi
 
 ## Exercise 10.3
 
-See Table 10.13 in the book and use the schizophrenia data (see below). Modify the R codes given in the **Examples of Chapter 10** to create suitable graphics and to analyse the data.
+See Table 10.13 in the book and use the schizophrenia2 data (see below). Modify the R codes given in the **Examples of Chapter 10** to create suitable graphics and to analyse the data.
 
 ```{r, echo=TRUE}
+library("HSAUR3")
+data("schizophrenia2", package = "HSAUR3")
+head(schizophrenia2, 20)
 ```
