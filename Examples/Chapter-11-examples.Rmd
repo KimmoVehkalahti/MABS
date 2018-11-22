@@ -1,0 +1,136 @@
+---
+title:  |  
+  |  *Multivariate Analysis for the Behavioral Sciences,*
+  |  Second Edition (Chapman and Hall/CRC, 2019)
+  |  **Examples of Chapter 11:**
+  |  **Missing Values**
+author: "Kimmo Vehkalahti and Brian S. Everitt"
+date: "22 November 2018"
+output: 
+  pdf_document:
+    number_sections: no
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+\pagebreak
+
+# Examples
+
+# Table 11.1: Car Wash Data That Includes Missing Values
+
+```{r, echo=TRUE}
+library("tidyr"); library("dplyr")
+
+WASH2 <- read.table("data/carwash2.txt", sep = ' ', header = TRUE)
+
+glimpse(WASH2)
+
+WASH2
+```
+\pagebreak
+
+## Table 11.2
+
+```{r, echo=TRUE}
+fit02 <- lm(Time ~ Age + Extro, data = WASH2)
+summary(fit02)
+```
+\pagebreak
+
+## Table 11.3
+
+```{r, echo=TRUE}
+#install.packages("mice")
+library("mice")
+
+imp1_WASH2 <- mice(WASH2, method = "mean", m = 1, maxit = 1, seed = 2018)
+fit12 <- with(imp1_WASH2, 
+              lm(Time ~ Age + Extro))
+summary(fit12)
+```
+\pagebreak
+
+## Table 11.4
+
+```{r, echo=TRUE}
+library("mice")
+
+imp2_WASH2 <- mice(WASH2, method = "pmm", m = 5, seed = 2018, print = TRUE)
+fit22 <- with(imp2_WASH2, 
+              lm(Time ~ Age + Extro))
+summary(pool(fit22))
+```
+\pagebreak
+
+# Beat the Blues Revisited (Again)
+
+Using the Beat the Blues data introduced in **Chapter 9** and revisited in **Chapter 10**:
+
+```{r, echo=TRUE}
+BtB <- read.table("data/BtB.txt", header = TRUE, sep = '\t')
+
+# to make sure that the factor levels are logical (esp. Treatment):
+BtB <- within(BtB, {
+       Drug <- factor(Drug, levels=c("No", "Yes")) # default
+     Length <- factor(Length, levels=c("<6m", ">6m")) # default
+  Treatment <- factor(Treatment, levels=c("TAU", "BtheB")) # NOT default!
+})
+
+glimpse(BtB); head(BtB); tail(BtB)
+
+# Convert data to long form for the analyses, adding Time:
+BtBL <- gather(BtB, key = Visit, value = BDI, BDI2m, BDI4m, BDI6m, BDI8m) %>%
+  mutate(Time = as.integer(substr(Visit, 4, 4))) 
+
+glimpse(BtBL); head(BtBL); tail(BtBL)
+```
+\pagebreak
+
+## Table 11.5
+
+```{r, echo=TRUE}
+library("mice")
+
+imp1_BtB <- mice(BtBL, method = "mean", m = 1, maxit = 1, seed = 2019)
+
+fit0mean <- with(imp1_BtB, 
+                 lm(BDI ~ BDIpre + Time + Treatment + Drug + Length))
+summary(fit0mean)
+```
+\pagebreak
+
+## Table 11.6
+
+```{r, echo=TRUE}
+imp2_BtB <- mice(BtBL, method = "pmm", m = 5, seed = 2020, print = FALSE)
+
+fit0mi <- with(imp2_BtB, 
+               lm(BDI ~ BDIpre + Time + Treatment + Drug + Length))
+summary(pool(fit0mi))
+```
+\pagebreak
+
+## Table 11.7
+
+```{r, echo=TRUE}
+# install.packages("lme4")
+library("lme4")
+
+imp1_BtB <- mice(BtBL, method = "mean", m = 1, maxit = 1, seed = 2019)
+fit1mean <- with(imp1_BtB, 
+                 lmer(BDI ~ BDIpre + Time + Treatment + Drug + Length + (1 | Subject)))
+summary(fit1mean)
+```
+\pagebreak
+
+## Table 11.8
+
+```{r, echo=TRUE}
+imp2_BtB <- mice(BtBL, method = "pmm", m = 5, seed = 2020, print = FALSE)
+fit1mi <- with(imp2_BtB, 
+               lmer(BDI ~ BDIpre + Time + Treatment + Drug + Length + (1 | Subject)))
+summary(pool(fit1mi))
+```

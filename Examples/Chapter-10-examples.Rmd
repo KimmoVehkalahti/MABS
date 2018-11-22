@@ -21,10 +21,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Beat the Blues Revisited
 
-Using the Beat the Blues data introduced in **Chapter 8**:
+Using the Beat the Blues data introduced in **Chapter 9**:
 
 ```{r, echo=TRUE}
-library(tidyr); library(dplyr);
+library("tidyr"); library("dplyr")
 
 BtB <- read.table("data/BtB.txt", header = TRUE, sep = '\t')
 
@@ -75,7 +75,7 @@ summary(BtB_gee2)
 # Table 10.1: Respiratory Disorder Data
 
 ```{r, echo=TRUE}
-library(tidyr); library(dplyr); 
+library("tidyr"); library("dplyr")
 # install.packages("HSAUR3")
 library("HSAUR3")
 data("respiratory", package = "HSAUR3")
@@ -128,7 +128,7 @@ row.names(RPos) <- 1:10
 names(RPos) <- c("treatment", "month", "positive")
 RPos$treatment <- factor(RPos$treatment, labels = c("placebo", "treatment"))
 
-library(ggplot2)
+library("ggplot2")
 
 p1 <- ggplot(RPos, aes(x = month, y = positive, fill = treatment))
 p2 <- p1 + geom_bar(position = "dodge", stat = "identity")

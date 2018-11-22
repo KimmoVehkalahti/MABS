@@ -1,0 +1,44 @@
+---
+title:  |  
+  |  *Multivariate Analysis for the Behavioral Sciences,*
+  |  Second Edition (Chapman and Hall/CRC, 2019)
+  |  **Exercises of Chapter 11:**
+  |  **Missing Values**
+author: "Kimmo Vehkalahti and Brian S. Everitt"
+date: "22 November 2018"
+output: 
+  pdf_document:
+    number_sections: no
+    toc: no
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Exercises
+
+## Exercise 11.1
+
+Use the strings data, modifying the related R code given in the **Examples of Chapter 11**.
+
+```{r, echo=TRUE}
+strings <- read.table("data/strings.txt", header = TRUE)
+strings
+```
+\pagebreak
+
+## Exercise 11.2
+
+Continue with the data given in the previous exercise.
+
+\pagebreak
+
+## Exercise 11.3
+
+Use the implants data, modifying the related R code given in the **Examples of Chapter 11** to analyse the data.
+
+```{r, echo=TRUE}
+implants <- read.table("data/implants.txt", header = TRUE)
+implants
+```
