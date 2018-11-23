@@ -50,6 +50,7 @@ imp1_WASH2 <- mice(WASH2, method = "mean", m = 1, maxit = 1, seed = 2018)
 fit12 <- with(imp1_WASH2, 
               lm(Time ~ Age + Extro))
 summary(fit12)
+summary(fit12$analyses[[1]]) # single data: get the traditional summary
 ```
 \pagebreak
 
@@ -99,6 +100,7 @@ imp1_BtB <- mice(BtBL, method = "mean", m = 1, maxit = 1, seed = 2019)
 fit0mean <- with(imp1_BtB, 
                  lm(BDI ~ BDIpre + Time + Treatment + Drug + Length))
 summary(fit0mean)
+summary(fit0mean$analyses[[1]]) # single data: get the traditional summary
 ```
 \pagebreak
 
@@ -123,6 +125,7 @@ imp1_BtB <- mice(BtBL, method = "mean", m = 1, maxit = 1, seed = 2019)
 fit1mean <- with(imp1_BtB, 
                  lmer(BDI ~ BDIpre + Time + Treatment + Drug + Length + (1 | Subject)))
 summary(fit1mean)
+summary(fit1mean$analyses[[1]]) # single data: get the traditional summary
 ```
 \pagebreak
 
