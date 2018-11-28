@@ -1,0 +1,168 @@
+---
+title:  |  
+  |  *Multivariate Analysis for the Behavioral Sciences,*
+  |  Second Edition (Chapman and Hall/CRC, 2019)
+  |  **Examples of Chapter 12:**
+  |  **Multivariate Data and Multivariate Analysis**
+author: "Kimmo Vehkalahti and Brian S. Everitt"
+date: "28 November 2018"
+output: 
+  pdf_document:
+    number_sections: no
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+\pagebreak
+
+# Examples
+
+# Table 12.1: Chest, Waist, and Hip Measurements of 20 Individuals
+
+```{r, echo=TRUE, comment=''}
+body <- structure(list(
+  Chest = c(34, 37, 38, 36, 38, 43, 40, 38, 40, 41, 36, 36, 34, 33, 36, 37, 34, 36, 38, 35), 
+  Waist = c(30, 32, 30, 33, 29, 32, 33, 30, 30, 32, 24, 25, 24, 22, 26, 26, 25, 26, 28, 23), 
+  Hips = c(32, 37, 36, 39, 33, 38, 42, 40, 37, 39, 35, 37, 37, 34, 38, 37, 38, 37, 40, 35)), 
+  .Names = c("Chest", "Waist", "Hips"), row.names = c(NA, -20L), class = "data.frame")
+body
+
+colMeans(body); diag(round(var(body), digits = 2))
+round(var(body), digits = 2)
+round(cor(body), digits = 2)
+```
+\pagebreak
+
+## Figure 12.1
+
+```{r, echo=TRUE}
+attach(body)
+par(mfrow = c(1,3))
+boxplot(Chest, ylab = "Inches", xlab = "Chest")
+boxplot(Waist, ylab = "Inches", xlab = "Waist")
+boxplot(Hips,  ylab = "Inches", xlab = "Hips")
+detach(body)
+```
+\pagebreak
+
+## Figure 12.2
+
+```{r, echo=TRUE, fig.width=6, fig.height=6}
+# function for plotting histograms on main diagonal of pairs plot
+panel.hist <- function(x, ...)
+{
+    usr <- par("usr"); on.exit(par(usr))
+    par(usr = c(usr[1:2], 0, 1.5) )
+    h <- hist(x, plot = FALSE)
+    breaks <- h$breaks
+    nB <- length(breaks)
+    y <- h$counts
+    y <- y/max(y)
+    rect(breaks[-nB], 0, breaks[-1], y, col="cyan", ...)
+}
+
+pairs(body, diag.panel = panel.hist)
+```
+\pagebreak
+
+## Figure 12.3
+```{r, echo=TRUE, fig.width=8, fig.height=8}
+# bivariate normal density
+x <- seq(-4, 4, length = 100)
+y <- seq(-4, 4, length = 100)
+mu1 <- 0
+mu2 <- 0
+sig1 <- 1
+sig2 <- 1
+rho <- 0.5
+
+bvn <- function(x, y, mu1, mu2, sig1, sig2, rho) {
+    denom <- 2*pi*sig1*sig2*sqrt(1-rho*rho)
+    num <- ((x-mu1)/sig1)^2 - 2*rho*((x-mu1)/sig1)*((y-mu2)/sig2) + ((y-mu2)/sig2)^2
+    num <- exp(-1/(2*(1-rho^2))*num)
+    den <- num / denom
+}
+# mvden will be a 100x100 matrix:
+mvden <- outer(x, y, FUN = bvn, mu1, mu2, sig1, sig2, rho)
+
+library(lattice)
+wireframe(mvden, xlab = expression(x[1]), ylab = expression(x[2]), 
+          zlab = list(expression(f(x[1], x[2])), rot = 90), 
+          screen = list(z = 25, x = -75, y = 0), zoom = 0.962,
+          scales = list(distance = 0.5, col = 1),
+          par.settings = list(axis.line = list(col = "transparent"))
+)
+
+```
+\pagebreak
+
+## Figure 12.4
+```{r, echo=TRUE}
+attach(body)
+par(mfrow=c(1,3))
+qqnorm(Chest, main = "Chest")
+qqnorm(Waist, main = "Waist")
+qqnorm(Hips,  main = "Hips")
+detach(body)
+```
+\pagebreak
+
+## Figure 12.5
+```{r, echo=TRUE, fig.width=5, fig.height=5}
+chisplot <- function(x) {
+    if (!is.matrix(x)) stop("x is not a matrix")
+    n <- nrow(x)
+    p <- ncol(x)
+    xbar <- apply(x, 2, mean)
+    S <- var(x)
+    S <- solve(S)
+    index <- (1 : n) / (n + 1)
+    xcent <- t(t(x) - xbar)
+    di <- apply(xcent, 1, function(x,S) x %*% S %*% x, S)
+    
+    quant <- qchisq(index, p)
+    plot(quant, sort(di), 
+         ylab = "Ordered distances", 
+         xlab = "Chi-square quantile", 
+         lwd = 2, pch = 1)
+}
+chisplot(as.matrix(body)); abline(0,1)
+```
+\pagebreak
+
+# Table 12.2: Data on Paint Sprayers
+```{r, echo=TRUE}
+paint <- read.table("data/paint.txt", header = TRUE, sep = '\t')
+
+str(paint)
+head(paint, n = 20)
+```
+\pagebreak
+
+## Figure 12.6
+```{r, echo=TRUE, fig.width=5.5, fig.height=5.5}
+par(mfrow = c(2,3))
+qqnorm(paint[, 1], main = "Haemo")
+qqnorm(paint[, 2], main = "PCV")
+qqnorm(paint[, 3], main = "WBC")
+qqnorm(paint[, 4], main = "Lympho")
+qqnorm(paint[, 5], main = "Neutro")
+qqnorm(paint[, 6], main = "Lead")
+```
+\pagebreak
+
+## Figure 12.7
+```{r, echo=TRUE, fig.width=5.5, fig.height=5.5}
+chisplot(as.matrix(paint))
+abline(0,1)
+```
+
+\pagebreak
+
+## Figure 12.8
+```{r, echo=TRUE, fig.width=5.5, fig.height=5.5}
+chisplot(as.matrix(log(paint)))
+abline(0,1)
+```
