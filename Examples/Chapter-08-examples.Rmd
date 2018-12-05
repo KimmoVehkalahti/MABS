@@ -21,7 +21,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Table 8.1: BPRS Measurements from 40 Subjects
 
-```{r BPRS data, echo=TRUE}
+```{r}
 library(tidyr); library(dplyr); library(ggplot2)
 
 BPRS <- read.table("data/BPRS.txt", sep = ' ', header = TRUE)
@@ -31,23 +31,22 @@ BPRS <- within(BPRS, {
 })
 
 glimpse(BPRS)
-
 head(BPRS)
-
 tail(BPRS)
 
 # Convert data to long form:
-
-BPRSL <- gather(BPRS, key = weeks, value = bprs, -treatment, -subject) %>%
+BPRSL <- gather(BPRS, key = weeks, value = bprs, week0:week8) %>%
   mutate(week = as.integer(substr(weeks, 5, 5)))
 
 glimpse(BPRSL)
+head(BPRSL)
+tail(BPRSL)
 ```
 \pagebreak
 
 ## Figure 8.1
 
-```{r Figure 8.1, echo=TRUE}
+```{r}
 p1 <- ggplot(BPRSL, aes(x = week, y = bprs, linetype = subject))
 p2 <- p1 + geom_line() + scale_linetype_manual(values = rep(1:10, times=4))
 p3 <- p2 + facet_grid(. ~ treatment, labeller = label_both)
@@ -60,7 +59,7 @@ p6
 
 ## Figure 8.2
 
-```{r Figure 8.2, echo=TRUE}
+```{r}
 # Standardise the scores:
 BPRSL <- BPRSL %>%
   group_by(week) %>%
@@ -80,9 +79,11 @@ p6
 
 ## Figure 8.3
 
-```{r Figure 8.3, echo=TRUE}
+```{r}
+# Number of weeks, baseline (week 0) included:
+n <- BPRSL$week %>% unique() %>% length()
+
 # Make a summary data:
-n <- length(0:8) # weeks, incl. baseline (0)
 BPRSS <- BPRSL %>%
   group_by(treatment, week) %>%
   summarise( mean=mean(bprs), se=sd(bprs)/sqrt(n) ) %>%
@@ -102,7 +103,7 @@ p7
 
 ## Figure 8.4
 
-```{r Figure 8.4, echo=TRUE}
+```{r}
 p1 <- ggplot(BPRSL, aes(x = factor(week), y = bprs, fill = treatment))
 p2 <- p1 + geom_boxplot(position = position_dodge(width = 0.9))
 p3 <- p2 + theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
@@ -116,7 +117,7 @@ p5
 
 ## Figure 8.5
 
-```{r Figure 8.5, echo=TRUE}
+```{r}
 # Make a summary data of the post treatment weeks (1-8)
 BPRSL8S <- BPRSL %>%
   filter(week > 0) %>%
@@ -137,7 +138,7 @@ p5
 
 ## Figure 8.6
 
-```{r Figure 8.6, echo=TRUE}
+```{r}
 # Remove the outlier:
 BPRSL8S1 <- BPRSL8S %>%
   filter(mean < 60)
@@ -155,7 +156,7 @@ p5
 
 ## Table 8.3
 
-```{r Table 8.3, echo=TRUE}
+```{r}
 # Without the outlier, apply Student's t-test, two-sided:
 
 t.test(mean ~ treatment, data = BPRSL8S1, var.equal = TRUE)
@@ -164,7 +165,7 @@ t.test(mean ~ treatment, data = BPRSL8S1, var.equal = TRUE)
 
 ## Table 8.4
 
-```{r Table 8.4, echo=TRUE}
+```{r}
 # Add the baseline from the original data as a new variable to the summary data:
 
 baseline <- BPRS$week0
@@ -181,7 +182,7 @@ anova(fit)
 \pagebreak
 
 # Table 8.5: Pain Scores from 83 Women in Labor: 43 Subjects in Group 1 (Medication) and 40 Subjects in Group 2 (Placebo)
-```{r PAIN data, echo=TRUE}
+```{r}
 PAIN <- read.table("data/pain.txt", header = TRUE, sep = "\t")
 
 PAIN <- within(PAIN, {
@@ -195,7 +196,7 @@ glimpse(PAIN)
 
 ## Table 8.6
 
-```{r Table 8.6, echo=TRUE}
+```{r}
 # Convert data to long form:
 PAINL <- gather(PAIN, key = mins, value = pain, -group, -id) %>%
   mutate(mins = as.integer(substr(mins,2,4)))
