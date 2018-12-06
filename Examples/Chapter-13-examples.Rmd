@@ -1,0 +1,232 @@
+---
+title:  |  
+  |  *Multivariate Analysis for the Behavioral Sciences,*
+  |  Second Edition (Chapman and Hall/CRC, 2019)
+  |  **Examples of Chapter 13:**
+  |  **Principal Components Analysis**
+author: "Kimmo Vehkalahti and Brian S. Everitt"
+date: "5 December 2018"
+output: 
+  pdf_document:
+    number_sections: no
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+\pagebreak
+
+# Examples
+
+# Table 13.1: Correlations of Blood Chemistry Variables and Their Standard Deviations
+
+```{r, comment=''}
+blood_chem <- c(1.000, 0.290, 0.202,-0.055,-0.105,-0.252,-0.229, 0.058,
+                0.290, 1.000, 0.415, 0.285,-0.376,-0.349,-0.164,-0.129,
+                0.202, 0.415, 1.000, 0.419,-0.521,-0.441,-0.145,-0.076,
+               -0.055, 0.285, 0.419, 1.000,-0.877,-0.076, 0.023,-0.131,
+               -0.105,-0.376,-0.521,-0.877, 1.000, 0.206, 0.034, 0.151,
+               -0.252,-0.349,-0.441,-0.076, 0.206, 1.000, 0.192, 0.077,
+               -0.229,-0.164,-0.145, 0.023, 0.034, 0.192, 1.000, 0.423,
+                0.058,-0.129,-0.076,-0.131, 0.151, 0.077, 0.423, 1.000)
+blood_corr <- matrix(blood_chem, ncol = 8)
+sds <- c(0.371, 41.253, 1.935, 0.077, 0.071, 4.037, 2.732, 0.297)
+names <- c("rBlood", "Plate", "wBlood", "Neut.", "Lymph", "Bilir.", "Sodium", "Potass.")
+dimnames(blood_corr) <- list(names, names)
+
+blood_corr
+sds
+```
+\pagebreak
+
+## Table 13.2
+
+```{r}
+# Calculate the covariance matrix:
+blood_cov <- diag(sds) %*% blood_corr %*% diag(sds)
+dimnames(blood_cov) <-list(names, names)
+blood_pcacov <- princomp(covmat = blood_cov)
+
+summary(blood_pcacov, loadings = TRUE)
+```
+\pagebreak
+
+## Table 13.3
+
+```{r}
+blood_pcacor <- princomp(covmat = blood_corr)
+summary(blood_pcacor, loadings = TRUE)
+```
+\pagebreak
+
+## Figure 13.1
+
+```{r, fig.width=7, fig.height=7}
+par(mfrow = c(2,1))
+plot(1:8, blood_pcacor$sdev^2, 
+     xlab = "Component number", ylab = "Component variance", type = "l")
+title("Scree Diagram")
+
+plot(1:8, log(blood_pcacor$sdev^2), 
+     xlab = "Component number", ylab = "log(component variance)", type = "l")
+title("Log(Eigenvalue) Diagram")
+```
+\pagebreak
+
+# Table 13.4: Head Lengths (in Millimeters) of First and Second Sons of 25 Families
+
+```{r}
+head_dat <- structure(
+  c(191, 195, 181, 183, 176, 208, 189, 197, 188, 192, 179, 183, 
+    174, 190, 188, 163, 195, 186, 181, 175, 192, 174, 176, 197, 190, 
+    179, 201, 185, 188, 171, 192, 190, 189, 197, 187, 186, 174, 
+    185, 195, 187, 161, 183, 173, 182, 165, 185, 178, 176, 200, 187), 
+  .Dim = c(25L, 2L), .Dimnames = list(NULL, c("HLFS", "HLSS")))
+head_dat
+
+# get principal components
+head_pc <- princomp(covmat = var(head_dat))
+head_pc
+
+print(summary(head_pc), digits = 3, loadings = TRUE)
+
+# pc scores for first family
+head_pc1 <- princomp(head_dat)
+head_pc1$scores[1, ]
+
+# check
+0.693*(191-185.72)+0.721*(179-183.84)
+-0.721*(191-185.72)+0.693*(179-183.84)
+
+y1 <- 12.9524588 * c(0.692986, 0.720951)
+y2 <- 5.3229513 * c(-0.720951, 0.692986)
+X <- cbind(y1, y2)
+X %*% t(X)
+
+```
+\pagebreak
+
+## Figure 13.2
+
+```{r, fig.width=7, fig.height=7}
+a1 <- 183.84-0.721*185.72/0.693
+b1 <- 0.721/0.693
+a2 <- 183.84-(-0.693*185.72/0.721)
+b2 <- -0.693/0.721
+plot(head_dat, xlab = "First Son's Head Length (mm)", ylab = "Second Son's Head Length")
+abline(a1, b1)
+abline(a2, b2, lty=2)
+```
+\pagebreak
+
+## Figure 13.3
+
+```{r, fig.width=7, fig.height=7}
+xlim <- range(head_pc1$scores[, 1])
+plot(head_pc1$scores, xlim = xlim, ylim = xlim)
+```
+\pagebreak
+
+# Table 13.5: Crime Rates in the United States
+
+```{r}
+crime <- read.table("data/crime.txt", sep = '\t')
+str(crime)
+
+crime
+```
+\pagebreak
+
+## Figure 13.4
+
+```{r, fig.width=10, fig.height=10}
+pairs(crime)
+```
+\pagebreak
+
+## Table 13.6
+
+```{r}
+crime_pc <- princomp(crime, cor = TRUE)
+summary(crime_pc, loadings = TRUE)
+```
+\pagebreak
+
+## Figure 13.5
+
+```{r}
+plot(1:7, crime_pc$sdev^2, type = "l", xlab = "Component Number", ylab = "Variance")
+```
+\pagebreak
+
+## Figure 13.6
+
+```{r, fig.width=7, fig.height=7}
+xlim <- range(crime_pc$scores[, 1])
+plot(crime_pc$scores[, 1], crime_pc$scores[, 2],
+     xlab = "First PC score", ylab = "Second PC score", xlim = xlim, ylim = xlim, type = "n")
+text(crime_pc$scores[, 1], crime_pc$scores[, 2], row.names(crime), cex=1.0) 
+```
+\pagebreak
+
+## Table 13.7
+
+```{r}
+options(digits=3)
+# use all pcas to get original correlation matrix
+lambda <- crime_pc$sdev^2
+Astar <- crime_pc$loadings[1:7, 1:7]
+R <- Astar %*% diag(lambda) %*% t(Astar)
+R
+
+# predicted correlation matrix based on first two components
+lambda2 <- lambda[1:2]
+Astar2 <- Astar[,1:2]
+R2 <- Astar2 %*% diag(lambda2) %*% t(Astar2)
+R2
+```
+\pagebreak
+
+# Table 13.8: Correlation Matrix for Drug Usage Data
+
+```{r}
+drugs_corr <- structure(c(
+ 
+ 1,     0.447, 0.442, 0.435, 0.114, 0.203, 0.091, 0.082, 0.513, 0.304, 0.245, 0.101, 0.245, 
+ 0.447, 1,     0.619, 0.604, 0.068, 0.146, 0.103, 0.063, 0.445, 0.318, 0.203, 0.088, 0.199, 
+ 0.442, 0.619, 1,     0.583, 0.053, 0.139, 0.110, 0.066, 0.365, 0.240, 0.183, 0.074, 0.184, 
+ 0.435, 0.605, 0.583, 1,     0.115, 0.258, 0.122, 0.097, 0.482, 0.368, 0.255, 0.139, 0.293, 
+ 0.114, 0.068, 0.053, 0.115, 1,     0.349, 0.209, 0.321, 0.186, 0.303, 0.272, 0.279, 0.278, 
+ 0.203, 0.146, 0.139, 0.258, 0.349, 1,     0.221, 0.355, 0.315, 0.377, 0.323, 0.367, 0.545, 
+ 0.091, 0.103, 0.110, 0.122, 0.209, 0.221, 1,     0.201, 0.150, 0.163, 0.310, 0.232, 0.232, 
+ 0.082, 0.063, 0.066, 0.097, 0.321, 0.355, 0.201, 1,     0.154, 0.219, 0.288, 0.320, 0.314, 
+ 0.513, 0.445, 0.365, 0.482, 0.186, 0.315, 0.150, 0.154, 1,     0.534, 0.301, 0.204, 0.394, 
+ 0.304, 0.318, 0.240, 0.368, 0.303, 0.377, 0.163, 0.219, 0.534, 1,     0.302, 0.368, 0.467, 
+ 0.245, 0.203, 0.183, 0.255, 0.272, 0.323, 0.310, 0.288, 0.301, 0.302, 1,     0.304, 0.392, 
+ 0.101, 0.088, 0.074, 0.139, 0.279, 0.367, 0.232, 0.320, 0.204, 0.368, 0.304, 1,     0.511, 
+ 0.245, 0.199, 0.184, 0.293, 0.278, 0.545, 0.232, 0.314, 0.394, 0.467, 0.392, 0.511, 1    
+
+ ), .Dim = c(13L, 13L))
+
+drugs <- c("Cigarettes", "Beer", "Wine", "Liquor", "Cocaine", "Tranquilizers", "Drugstore",
+           "Heroin", "Marijuana", "Hashish", "Inhalants", "Hallucinogenics", "Amphetamine")
+dimnames(drugs_corr) <- list(drugs, c(1:13))
+drugs_corr
+```
+\pagebreak
+
+## Table 13.9
+
+```{r}
+drugs_pc <- princomp(covmat = drugs_corr)
+print(drugs_pc)
+summary(drugs_pc, loadings=TRUE)
+```
+\pagebreak
+
+## Figure 13.7
+
+```{r}
+plot(1:13, drugs_pc$sdev^2, type = "l", xlab = "Component Number", ylab = "Variance")
+```
