@@ -1,0 +1,99 @@
+---
+title:  |  
+  |  *Multivariate Analysis for the Behavioral Sciences,*
+  |  Second Edition (Chapman and Hall/CRC, 2019)
+  |  **Exercises of Chapter 14:**
+  |  **Multidimensional Scaling and Correspondence Analysis**
+author: "Kimmo Vehkalahti and Brian S. Everitt"
+date: "10 December 2018"
+output: 
+  pdf_document:
+    number_sections: no
+    toc: no
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Exercises
+
+## Exercise 13.2
+
+Use the matrix R below, modifying the related R code given in the **Examples of Chapter 13**.
+
+```{r}
+R <- matrix(c(
+  1,      0.6579, 0.0034,
+  0.6579, 1,     -0.0738,
+  0.0034,-0.0738, 1
+  ), ncol = 3, byrow = TRUE)
+```
+\pagebreak
+
+## Exercise 13.3
+
+Use the matrix R below, modifying the related R code given in the **Examples of Chapter 13**.
+
+**Source of the data:** Macdonnell, W. R. (1902). On criminal anthropometry and the identification of criminals. *Biometrika*, 1, 177-227 (Table 19 on page 202). https://www.jstor.org/stable/2331487 (Note: the original N is 3000.)
+
+```{r}
+R <- matrix(c(
+  1    , 0.402, 0.396, 0.301, 0.305, 0.339, 0.340,
+  0.402, 1    , 0.618, 0.150, 0.135, 0.206, 0.183, 
+  0.396, 0.618, 1    , 0.321, 0.289, 0.363, 0.345,
+  0.301, 0.150, 0.321, 1    , 0.846, 0.759, 0.661,
+  0.305, 0.135, 0.289, 0.846, 1    , 0.797, 0.800,
+  0.339, 0.206, 0.363, 0.759, 0.797, 1    , 0.736,
+  0.340, 0.183, 0.345, 0.661, 0.800, 0.736, 1
+  ), ncol=7,byrow=T)
+
+labels <- c("HL", "HB", "FB", "LFinL", "LForL", "LFootL", "Height")
+dimnames(R) <- list(labels, labels)
+
+R
+```
+\pagebreak
+
+## Exercise 13.4
+
+Use the prestige data, modifying the related R code given in the **Examples of Chapter 13** to visualize and analyse the data.
+
+**Source of the data**: Labovitz, S. (1970). The assignments of numbers to rank order categories.
+*American Sociological Review*, 35, 515–524. (Table 1 on page 516). https://www.jstor.org/stable/2092993
+
+```{r}
+prestige <- structure(
+  c(
+    82, 90, 76, 90, 87, 93, 90, 88, 89, 97, 59, 73, 81, 45, 39, 34, 41, 16,
+    33, 53, 67, 57, 26, 29, 10, 15, 19, 10, 13, 24, 20, 7, 16, 11, 8, 41, 
+    
+    23.8, 37.5, 37, 20.7, 10.6, 14.2, 45.6, 31.9, 24.3, 31.9, 16, 16.8, 64.8, 
+    47.3, 21.9, 16.5, 32.4, 24.1, 32.7, 30.8, 34.2, 34.5, 24.4, 29.4, 14.4, 
+    41.7, 19.2, 24.9, 17.9, 15.7, 36, 24.4, 42.2, 38.2, 20.3, 47.6, 
+    
+    3977, 5509, 4303, 4091, 2410, 4366, 6448, 4590, 6284, 8302, 3176, 3456, 
+    4700, 3806, 2828, 3480, 3771, 2543, 2450, 3447, 4648, 3303, 2693, 3353, 
+    1898, 2410, 3424, 2213, 2590, 2915, 2357, 1942, 2249, 2551, 1866, 2866, 
+    
+    14.4, 16, 15.6, 16, 16, 16, 16, 16, 16, 16, 15.8, 16, 12.2, 11.6, 12.7,
+    12.2, 12.7, 12.1, 8.7, 11.1, 8.8, 9.6, 9.4, 9.3, 10.3, 8.2, 9.2, 8.9, 9.6, 
+    9.6, 8.8, 9.8, 8.7, 8.5, 8.2, 10.6
+   ), 
+
+.Dim = c(36L, 4L), 
+.Dimnames = list(c("Accountants", "Architects", "Authors", "Chemists", 
+                   "Clergymen", "Academics", "Dentists", "Civengineers",
+                   "Lawyers", "Physicians", "Socialwk", "Teachers",
+                   "Mangmanuf", "Mangretail", "Bookkeepers", "Mail-carriers", 
+                   "Insurag", "Salesman", "Carpenters", "Electricians", 
+                   "Locmeng", "Machinists", "Mechanics", "Plumbers", 
+                   "Parkingatt", "Miners", "Railwaydr", "Taxidr", "Truckdr",
+                   "Machoper", "Barbers", "Waiters", "Cooks", "Watchmen", 
+                   "Janitors", "Policemen"), 
+                 c("Prestige", "Suicide", "Medinc", "Medianschy")
+                 )
+)
+head(prestige); tail(prestige)
+```
+\pagebreak

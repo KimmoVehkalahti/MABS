@@ -1,0 +1,8 @@
+BirthR	DeathR
+Japan          	8.4	9.9
+Italy          	8.6	10.2
+Spain          	9.4	8.6
+United Kingdom 	12.4	9.0
+Finland        	10.8	9.5
+Cuba           	11.2	7.6
+United States  	12.5	8.2
