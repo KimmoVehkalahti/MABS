@@ -165,7 +165,7 @@ p7
 ```
 \pagebreak
 
-# Figure 14.3
+## Figure 14.3
 
 For an interactive map, see https://goo.gl/maps/5Yp6nG31HeQ2
 
