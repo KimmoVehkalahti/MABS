@@ -1,0 +1,175 @@
+---
+title:  |  
+  |  *Multivariate Analysis for the Behavioral Sciences,*
+  |  Second Edition (Chapman and Hall/CRC, 2019)
+  |  **Examples of Chapter 15:**
+  |  **Exploratory Factor Analysis**
+author: "Kimmo Vehkalahti and Brian S. Everitt"
+date: "12 December 2018"
+output: 
+  pdf_document:
+    number_sections: no
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+\pagebreak
+
+# Examples
+
+# Table 15.1: Maximum Likelihood Two-Factor Solution for Correlations of Six School Subjects
+
+```{r}
+R <- c(  1.00, 0.44, 0.41, 0.29, 0.33, 0.25,
+         0.44, 1.00, 0.35, 0.35, 0.32, 0.33,
+         0.41, 0.35, 1.00, 0.16, 0.19, 0.18,
+         0.29, 0.35, 0.16, 1.00, 0.59, 0.47,
+         0.33, 0.32, 0.19, 0.59, 1.00, 0.46,
+         0.25, 0.33, 0.18, 0.47, 0.46, 1.00)
+
+school_subjects <- c("French", "English", "History", "Arithmetic", "Algebra", "Geometry")
+R <- matrix(R, ncol = 6, byrow = TRUE, dimnames = list(school_subjects, school_subjects))
+R
+
+Rfa1 <- factanal(covmat = R, factors = 1, n.obs = 220, rotation = "none")
+Rfa2 <- factanal(covmat = R, factors = 2, n.obs = 220, rotation = "none")
+Rfa3 <- factanal(covmat = R, factors = 3, n.obs = 220, rotation = "none")
+Rfa1
+Rfa2
+Rfa3
+```
+\pagebreak
+
+```{r}
+#install.packages("psych")
+library(psych)
+
+RfaNone <- fa(R, nfactors = 2, fm = "ml", rotate = "none")
+print.psych(RfaNone)
+```
+
+Correlation matrix of the six school subjects implied by the fitted two-factor model:
+
+```{r}
+lambdaHat <- as.matrix(RfaNone$loadings)
+Rhat <- lambdaHat %*% t(lambdaHat) + RfaNone$residual
+Rhat
+```
+\pagebreak
+
+## Figure 15.1
+
+```{r, fig.width=6, fig.height=6}
+plot(RfaNone$loadings, type = "n", 
+     xlim = c(-1, +1), ylim = c(-1, +1), 
+     xlab = "Factor 1", ylab = "Factor 2")
+text(RfaNone$loadings, labels = school_subjects)
+abline(h = 0, v = 0)
+```
+\pagebreak
+```{r, fig.width=5, fig.height=5}
+# same figure with ggplot (overkill, perhaps) - just testing:
+library(ggplot2)
+RfaNoneLoadings <- as.matrix(RfaNone$loadings)
+class(RfaNoneLoadings) <- "matrix"
+RfaNoneLoadings <- as.data.frame(RfaNoneLoadings)
+RfaNoneLoadings$Subject <- row.names(RfaNoneLoadings)
+
+p1 <- ggplot(RfaNoneLoadings, aes(x = ML1, y = ML2)) + geom_point()
+p2 <- p1 + geom_text(aes(x = ML1+0.03, y = ML2+0.00, 
+                         label = RfaNoneLoadings$Subject), size=4, hjust=0)
+p3 <- p2 + theme_bw() + theme(panel.grid.major = element_blank(), 
+                              panel.grid.minor = element_blank())
+p4 <- p3 + scale_x_continuous(limits = c(-1, +1), name = "Factor 1")
+p5 <- p4 + scale_y_continuous(limits = c(-1, +1), name = "Factor 2")
+p6 <- p5 + geom_vline(xintercept=0) + geom_hline(yintercept=0)
+p6
+```
+\pagebreak
+
+## Figure 15.2
+
+```{r, fig.width=7, fig.height=4}
+par(mfrow=c(1,2))
+
+plot(RfaNone$loadings, type = "n", xlim = c(0.03, 0.8), ylim = c(-0.5, +0.5), 
+     xlab = "Factor 1\n(a)", ylab = "Factor 2")
+text(RfaNone$loadings, labels = school_subjects, cex=0.5)
+abline(h = 0)
+abline(0, +1.5, lwd = 3)
+abline(0, -1.5, lwd = 3)
+
+RfaVarimax <- fa(R, nfactors = 2, fm = "ml", rotate = "varimax") # See the note below!
+
+plot(RfaVarimax$loadings, type = "n", xlim = c(0.03, 0.8), ylim = c(0.03, 0.8),
+     xlab = "Factor 1\n(b)", ylab = "Factor 2")
+text(RfaVarimax$loadings, labels = school_subjects, cex=0.5)
+abline(h = 0, v = 0, lwd = 3)
+```
+
+Above, the rotation was achieved using the varimax, because, as far as we know, no function for graphical rotation exists in R. For an inspiration to program such a function, you should take a good look at **Survo**: *an environment for creative processing of text and numerical data*, created by professor **Seppo Mustonen**  
+(see www.survo.fi/presentation/history.html), cf. the example of *classical music composers* in **Chapter 14**.
+
+**Interactive graphical rotation** has been available in various generations of Survo **since the 1970s**:
+
+* A short demo on YouTube shows how an **oblique graphical rotation** is applied in **SURVO MM**:  
+https://youtu.be/-yZRUR6gpAg (see www.survo.fi/demos/#ex38 for more details and links).
+
+* A historical example of using the graphical rotation in **SURVO 76** appears on pp. 29-30 of the report:  
+Mustonen, S. (1977). SURVO 76, a statistical data processing system. Research Report No. 6. Dept of Statistics, University of Helsinki. www.survo.fi/publications/Research_Report_6_Mustonen_1977.pdf
+
+Publications related to Survo since 1963: www.survo.fi/publications
+
+\pagebreak
+
+## Table 15.2
+
+```{r}
+RfaVarimax <- fa(R, nfactors = 2, fm = "ml", rotate = "varimax")
+print.psych(RfaVarimax, sort = TRUE)
+```
+\pagebreak
+
+## Table 15.3
+
+```{r}
+#install.packages("GPArotation")
+library(GPArotation)
+RfaOblimin <- fa(R, nfactors = 2, fm = "ml", rotate = "oblimin")
+print.psych(RfaOblimin, sort = TRUE)
+```
+\pagebreak
+
+# Table 15.4: Estimated Parameters for the Three-Factor Model Fitted to the Crime Rate Data by Maximum Likelihood
+
+```{r}
+# see Chapter 13, where this data set was used for the first time:
+crime <- read.table("data/crime.txt", sep = '\t')
+
+crime_fa1 <- factanal(crime, factors = 1, rotation = "none")
+crime_fa2 <- factanal(crime, factors = 2, rotation = "none")
+crime_fa3 <- factanal(crime, factors = 3, rotation = "none")
+
+crime_fa3None <- fa(crime, nfactors = 3, fm = "ml", rotate = "none")
+print.psych(crime_fa3None, digits = 3)
+```
+\pagebreak
+
+## Table 15.5
+
+```{r}
+crime_fa3varimax <- fa(crime, nfactors = 3, fm = "ml", rotate = "varimax")
+print.psych(crime_fa3varimax, digits = 3, sort = TRUE)
+```
+\pagebreak
+
+## Figure 15.3
+
+```{r, fig.width=8, fig.height=8}
+crime_fa3 <- factanal(crime, factors = 3, method = "mle", rotation = "varimax", 
+                      scores = "regression")
+pairs(crime_fa3$scores, 
+      panel = function(x,y) text(x, y, labels = row.names(crime), cex=0.8))
+```
