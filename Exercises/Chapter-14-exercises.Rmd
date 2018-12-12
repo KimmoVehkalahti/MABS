@@ -5,7 +5,7 @@ title:  |
   |  **Exercises of Chapter 14:**
   |  **Multidimensional Scaling and Correspondence Analysis**
 author: "Kimmo Vehkalahti and Brian S. Everitt"
-date: "10 December 2018"
+date: "12 December 2018"
 output: 
   pdf_document:
     number_sections: no
@@ -18,82 +18,80 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Exercises
 
-## Exercise 13.2
+## Exercise 14.2
 
-Use the matrix R below, modifying the related R code given in the **Examples of Chapter 13**.
+Use the matrix gdist below, modifying the related R code given in the **Examples of Chapter 14**.
 
 ```{r}
-R <- matrix(c(
-  1,      0.6579, 0.0034,
-  0.6579, 1,     -0.0738,
-  0.0034,-0.0738, 1
-  ), ncol = 3, byrow = TRUE)
+galaxies <- c("I", "SBc", "Sc", "Sbb", "Sb", "Sba", "Sa", "SBO", "SO", "E")
+
+g0 <- matrix(c(
+0.00,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,
+3.29,0.00,0   ,0   ,0   ,0   ,0   ,0   ,0   ,0   ,
+2.79,1.13,0.00,0   ,0   ,0   ,0   ,0   ,0   ,0   ,
+3.52,1.75,1.45,0.00,0   ,0   ,0   ,0   ,0   ,0   ,
+3.77,2.97,1.71,2.02,0.00,0   ,0   ,0   ,0   ,0   ,
+3.27,3.01,2.13,1.89,1.27,0.00,0   ,0   ,0   ,0   ,
+3.93,3.72,3.00,2.25,1.86,0.68,0.00,0   ,0   ,0   ,
+3.86,5.12,4.11,3.24,3.15,1.59,1.51,0.00,0   ,0   ,
+3.77,5.70,4.85,3.85,3.41,1.74,2.05,0.91,0.00,0   ,
+4.12,6.88,6.02,7.03,5.38,4.09,4.03,2.24,1.87,0.00)
+, nrow = 10, ncol = 10, byrow = TRUE, dimnames = list(galaxies, galaxies))
+
+gdist <- g0 + t(g0)
+gdist
+
 ```
 \pagebreak
 
-## Exercise 13.3
+## Exercise 14.3
 
-Use the matrix R below, modifying the related R code given in the **Examples of Chapter 13**.
-
-**Source of the data:** Macdonnell, W. R. (1902). On criminal anthropometry and the identification of criminals. *Biometrika*, 1, 177-227 (Table 19 on page 202). https://www.jstor.org/stable/2331487 (Note: the original N is 3000.)
+Use the matrix P12 below, modifying the related R code given in the **Examples of Chapter 14**.
 
 ```{r}
-R <- matrix(c(
-  1    , 0.402, 0.396, 0.301, 0.305, 0.339, 0.340,
-  0.402, 1    , 0.618, 0.150, 0.135, 0.206, 0.183, 
-  0.396, 0.618, 1    , 0.321, 0.289, 0.363, 0.345,
-  0.301, 0.150, 0.321, 1    , 0.846, 0.759, 0.661,
-  0.305, 0.135, 0.289, 0.846, 1    , 0.797, 0.800,
-  0.339, 0.206, 0.363, 0.759, 0.797, 1    , 0.736,
-  0.340, 0.183, 0.345, 0.661, 0.800, 0.736, 1
-  ), ncol=7,byrow=T)
+countries <- c("Brazil", "Zaire", "Cuba", "Egypt", "France", "India", 
+               "Israel", "Japan", "China", "USSR", "USA", "Yugoslavia")
 
-labels <- c("HL", "HB", "FB", "LFinL", "LForL", "LFootL", "Height")
-dimnames(R) <- list(labels, labels)
+    cntrs <- c("Brz", "Zai", "Cub", "Egy", "Fra", "Ind", 
+               "Isr", "Jpn", "Chi", "USSR", "USA", "Yug")
 
-R
+P0 <- matrix(c(
+0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,
+4.83,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,
+5.28,4.26,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,
+3.44,5.00,5.17,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,
+4.72,4.00,4.11,4.78,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,
+4.50,4.83,4.00,5.83,3.44,0.00,0.00,0.00,0.00,0.00,0.00,0.00,
+3.83,3.33,3.61,4.67,4.00,4.11,0.00,0.00,0.00,0.00,0.00,0.00,
+3.50,3.39,2.94,9.84,4.11,4.50,4.83,0.00,0.00,0.00,0.00,0.00,
+2.39,4.00,5.50,4.39,3.67,4.11,3.00,4.17,0.00,0.00,0.00,0.00,
+3.06,3.39,5.44,4.39,5.06,4.50,4.17,4.61,5.72,0.00,0.00,0.00,
+5.39,2.39,3.17,3.33,5.94,4.28,5.94,6.06,2.56,5.00,0.00,0.00,
+3.17,3.50,5.11,4.28,4.72,4.00,4.44,4.28,5.06,6.67,3.56,0.00)
+, nrow = 12, byrow = TRUE, dimnames = list(countries, cntrs))
+
+P12 <- P0 + t(P0)
+P12
+
 ```
 \pagebreak
 
-## Exercise 13.4
+## Exercise 14.4
 
-Use the prestige data, modifying the related R code given in the **Examples of Chapter 13** to visualize and analyse the data.
+Use the table EyeHair below, modifying the related R code given in the **Examples of Chapter 14** to visualize and analyse the data.
 
-**Source of the data**: Labovitz, S. (1970). The assignments of numbers to rank order categories.
-*American Sociological Review*, 35, 515–524. (Table 1 on page 516). https://www.jstor.org/stable/2092993
+**Source of the data**: Fisher, R. A. (1940). The precision of discriminant functions. *Annals of Eugenics*,
+10, 422–429. (Table on p.426: "Tocher’s data for Caithness compiled by K. Maung of the Galton Laboratory"). https://doi.org/10.1111/j.1469-1809.1940.tb02264.x 
 
 ```{r}
-prestige <- structure(
-  c(
-    82, 90, 76, 90, 87, 93, 90, 88, 89, 97, 59, 73, 81, 45, 39, 34, 41, 16,
-    33, 53, 67, 57, 26, 29, 10, 15, 19, 10, 13, 24, 20, 7, 16, 11, 8, 41, 
-    
-    23.8, 37.5, 37, 20.7, 10.6, 14.2, 45.6, 31.9, 24.3, 31.9, 16, 16.8, 64.8, 
-    47.3, 21.9, 16.5, 32.4, 24.1, 32.7, 30.8, 34.2, 34.5, 24.4, 29.4, 14.4, 
-    41.7, 19.2, 24.9, 17.9, 15.7, 36, 24.4, 42.2, 38.2, 20.3, 47.6, 
-    
-    3977, 5509, 4303, 4091, 2410, 4366, 6448, 4590, 6284, 8302, 3176, 3456, 
-    4700, 3806, 2828, 3480, 3771, 2543, 2450, 3447, 4648, 3303, 2693, 3353, 
-    1898, 2410, 3424, 2213, 2590, 2915, 2357, 1942, 2249, 2551, 1866, 2866, 
-    
-    14.4, 16, 15.6, 16, 16, 16, 16, 16, 16, 16, 15.8, 16, 12.2, 11.6, 12.7,
-    12.2, 12.7, 12.1, 8.7, 11.1, 8.8, 9.6, 9.4, 9.3, 10.3, 8.2, 9.2, 8.9, 9.6, 
-    9.6, 8.8, 9.8, 8.7, 8.5, 8.2, 10.6
-   ), 
+EyeHair <- as.table(rbind(
+              c(326,  38, 241, 110,  3),
+              c(688, 116, 584, 188,  4),
+              c(343,  84, 909, 412, 26),
+              c( 98,  48, 403, 681, 85)
+           ))
 
-.Dim = c(36L, 4L), 
-.Dimnames = list(c("Accountants", "Architects", "Authors", "Chemists", 
-                   "Clergymen", "Academics", "Dentists", "Civengineers",
-                   "Lawyers", "Physicians", "Socialwk", "Teachers",
-                   "Mangmanuf", "Mangretail", "Bookkeepers", "Mail-carriers", 
-                   "Insurag", "Salesman", "Carpenters", "Electricians", 
-                   "Locmeng", "Machinists", "Mechanics", "Plumbers", 
-                   "Parkingatt", "Miners", "Railwaydr", "Taxidr", "Truckdr",
-                   "Machoper", "Barbers", "Waiters", "Cooks", "Watchmen", 
-                   "Janitors", "Policemen"), 
-                 c("Prestige", "Suicide", "Medinc", "Medianschy")
-                 )
-)
-head(prestige); tail(prestige)
+dimnames(EyeHair) <- list(EyeColor = c("Blue", "Light", "Medium", "Dark"),
+                         HairColor = c("Fair", "Red", "Medium", "Dark", "Black"))
+EyeHair
 ```
-\pagebreak
