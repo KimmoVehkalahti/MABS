@@ -20,7 +20,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Exercise 7.2
 
-```{r, echo=TRUE}
+```{r}
 brcancer <- structure(list(
   time = c(23, 47, 69, 70, 100, 101, 148, 181, 198, 208, 212, 224, 5, 8, 10, 13, 18, 
            24, 26, 26, 31, 35, 40, 41, 48, 50, 59, 61, 68, 71, 76, 105, 107, 109, 
@@ -57,7 +57,7 @@ detach(brcancer)
 
 ## Exercise 7.3
 
-```{r, echo=TRUE}
+```{r}
 glioma <- structure(list(
   no. = c(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L, 16L,
           17L, 18L, 19L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 
@@ -108,8 +108,8 @@ You should plot the survival curves of RIT and standard treatments.
 
 ## Exercise 7.4
 
-```{r, echo=TRUE}
-teeth <- read.table("data/teeth.txt", sep = '\t', header = TRUE)
+```{r}
+teeth <- read.csv(file = "data/teeth.csv", row.names = 1)
 head(teeth)
 #tail(teeth)
 
@@ -118,12 +118,9 @@ teeth$Survyear[teeth$Survyear > 13] <- 13
 teeth$Reint[teeth$Survyear == 13] <- 0
 ```
 
-As an example, Figure 2 of the original article (Palotie et al., 2017),
-"Survival (%) of restorations placed in posterior teeth (n = 5542) of 25- to 30-year-olds
-illustrated as medians and Kaplan-Meier curves with 95% confidence intervals by type of tooth",
-was created by *Anna Eronen* as follows:
+As an example, Figure 2 of the original article (Palotie et al., 2017), entitled, "Survival (%) of restorations placed in posterior teeth (n = 5542) of 25- to 30-year-olds illustrated as medians and Kaplan-Meier curves with 95% confidence intervals by type of tooth", was created by one of the authors, *Anna Eronen*, as follows:
 
-```{r, echo=TRUE, fig.width=8, fig.height=8}
+```{r, fig.width=8, fig.height=8}
 library(survival)
 #install.packages("plotrix")
 library(plotrix)
