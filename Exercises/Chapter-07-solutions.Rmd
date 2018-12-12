@@ -156,4 +156,3 @@ kmtest.teeth <- survdiff(Surv(Survyear, Reint) ~ Type2, data = teeth)
 kmtest.teeth
 ```
 \pagebreak
-

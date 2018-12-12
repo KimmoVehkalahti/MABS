@@ -110,4 +110,3 @@ teeth$Reint[teeth$Survyear == 13] <- 0
 - Type4: 1=Upper premolar, 2=Lower premolar, 3=Upper molar, 4=Lower molar
 - Material: 1=Amalgam, 2=Composite
 - Type2: 1=Premolar, 2=Molar
-
