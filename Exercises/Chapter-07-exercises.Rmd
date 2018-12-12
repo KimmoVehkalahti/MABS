@@ -89,7 +89,11 @@ str(glioma)
 
 **Source of the data**: Palotie, U., Eronen, A. K., Vehkalahti, K. and Vehkalahti, M. M. (2017). Longevity of 2- and 3-surface restorations in posterior teeth of 25- to 30-year-olds attending Public Dental Service—A 13-year observation. *Journal of Dentistry*, 62, 13–17. https://doi.org/10.1016/j.jdent.2017.05.012
 
+<<<<<<< HEAD
 (Acknowledgements, p.17: "The authors acknowledge the Helsinki City Public Dental Service for handing their data at disposal. *Tuomo Maisala* is thanked for picking out the cases and *Marjut Grainger* for invaluable help with data cleaning.")
+=======
+The authors acknowledge the Helsinki City PDS for handing their data at disposal. *Tuomo Maisala* is thanked for picking out the cases and *Marjut Grainger* for invaluable help with data cleaning.
+>>>>>>> 188fa7aa4223e3810edde200a468b3f9066f2b77
 
 ```{r, echo=TRUE}
 teeth <- read.csv(file = "data/teeth.csv", row.names = 1)
