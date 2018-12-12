@@ -152,6 +152,13 @@ crime_fa1 <- factanal(crime, factors = 1, rotation = "none")
 crime_fa2 <- factanal(crime, factors = 2, rotation = "none")
 crime_fa3 <- factanal(crime, factors = 3, rotation = "none")
 
+crime_fa1
+crime_fa2
+crime_fa3
+```
+\pagebreak
+
+```{r}
 crime_fa3None <- fa(crime, nfactors = 3, fm = "ml", rotate = "none")
 print.psych(crime_fa3None, digits = 3)
 ```
