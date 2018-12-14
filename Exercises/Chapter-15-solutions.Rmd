@@ -1,0 +1,22 @@
+---
+title:  |  
+  |  *Multivariate Analysis for the Behavioral Sciences,*
+  |  Second Edition (Chapman and Hall/CRC, 2019)
+  |  **Solutions to Exercises of Chapter 15:**
+  |  **Exploratory Factor Analysis**
+author: "Kimmo Vehkalahti and Brian S. Everitt"
+date: "14 December 2018"
+output: 
+  pdf_document:
+    number_sections: no
+    toc: no
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Solutions
+
+No solutions - yet!
+
