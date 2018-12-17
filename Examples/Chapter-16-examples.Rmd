@@ -1,0 +1,380 @@
+---
+title:  |  
+  |  *Multivariate Analysis for the Behavioral Sciences,*
+  |  Second Edition (Chapman and Hall/CRC, 2019)
+  |  **Examples of Chapter 16:**
+  |  **Confirmatory Factor Analysis and Structural Equation Models**
+author: "Kimmo Vehkalahti and Brian S. Everitt"
+date: "14 December 2018"
+output: 
+  pdf_document:
+    number_sections: no
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+\pagebreak
+
+# Examples
+
+# Table 16.1: Observed Correlations for the Ability and Aspiration Example
+
+```{r}
+CORR <- matrix(c(1.00,0.00,0.00,0.00,0.00,0.00,
+                 0.73,1.00,0.00,0.00,0.00,0.00,
+                 0.70,0.68,1.00,0.00,0.00,0.00,
+                 0.58,0.61,0.57,1.00,0.00,0.00,
+                 0.46,0.43,0.40,0.37,1.00,0.00,
+                 0.56,0.52,0.48,0.41,0.72,1.00), 
+               ncol = 6, byrow = TRUE)
+varNames <- c("SCA", "PPE", "PTE", "PFE", "EA", "CP")
+dimnames(CORR) <- list(varNames, varNames)
+CORR
+```
+\pagebreak
+
+## Figure 16.1
+
+```{r}
+#install.packages("sem")
+#install.packages("semPlot")
+library(sem)
+library(semPlot)
+
+AAmodel <-specifyModel(text = "
+   Ability     -> SCA,        lambda[1], NA
+   Ability     -> PPE,        lambda[2], NA
+   Ability     -> PTE,        lambda[3], NA
+   Ability     -> PFE,        lambda[4], NA
+   Aspiration  -> EA,         lambda[5], NA
+   Aspiration  -> CP,         lambda[6], NA
+   Ability    <-> Aspiration, rho,       NA
+   SCA        <-> SCA,        u[1],      NA
+   PPE        <-> PPE,        u[2],      NA
+   PTE        <-> PTE,        u[3],      NA
+   PFE        <-> PFE,        u[4],      NA
+   EA         <-> EA,         u[5],      NA
+   CP         <-> CP,         u[6],      NA
+   Ability    <-> Ability,    NA,        1
+   Aspiration <-> Aspiration, NA,        1
+  ")
+
+options(fit.indices = c("CFI", "NNFI", "RMSEA", "SRMR")) # (NNFI = TLI)
+
+AAsem <- sem(AAmodel, CORR, N = 556)
+
+semPaths(AAsem, # filetype = "pdf", filename = "AAmodel-KV",
+         what = "path", whatLabels = "name", style = "lisrel", layout = "tree2", 
+         intercepts = FALSE, residuals = TRUE, thresholds = FALSE, reorder = FALSE,
+         rotation = 1, nCharNodes = 0, nCharEdges = 0, 
+         sizeMan = 8, sizeLat = 20,  sizeMan2 = 6, sizeLat2 = 10,
+         manifests = varNames, latents = c("Ability", "Aspiration"), 
+         residScale = 12, as.expression = c("edges", "nodes"), centerLevels = FALSE, 
+         edge.label.cex = 1.2, esize = 2.5, label.scale = TRUE, curvePivot = TRUE, 
+         curvePivotShape = 0.67, edge.label.position = 0.67, width = 6, height = 2.5)
+```
+\pagebreak
+
+## Table 16.2
+
+```{r}
+summary(AAsem)
+```
+\pagebreak
+
+# Figure 16.2: Path diagram for the drug usage model
+
+Revisiting the drug usage example introduced in **Chapter 13**:
+
+```{r, out.width='100%'}
+DRUGcorr <- matrix(c(
+  1.0,rep(0,12),
+  0.447,1.0,rep(0,11),
+  0.422,0.619,1.0,rep(0,10),
+  0.436,0.604,0.583,1.0,rep(0,9),
+  0.114,0.068,0.053,0.115,1.0,rep(0,8),
+  0.203,0.146,0.139,0.256,0.349,1.0,rep(0,7),
+  0.091,0.103,0.110,0.122,0.209,0.221,1.0,rep(0,6),
+  0.082,0.063,0.066,0.097,0.321,0.355,0.201,1.0,rep(0,5),
+  0.513,0.445,0.365,0.482,0.186,0.316,0.150,0.154,1.0,rep(0,4),
+  0.304,0.318,0.240,0.368,0.303,0.377,0.163,0.219,0.534,1.0,rep(0,3),
+  0.245,0.203,0.183,0.255,0.272,0.323,0.310,0.288,0.301,0.302,1.0,rep(0,2),
+  0.101,0.088,0.074,0.139,0.279,0.367,0.232,0.320,0.204,0.368,0.340,1.0,0.0,
+  0.245,0.199,0.184,0.293,0.278,0.545,0.232,0.314,0.394,0.467,0.392,0.511,1.0), ncol=13, byrow=T)
+DRUGnames <- c("Cigs", "Beer", "Wine", "Liqr", "Cocn", "Tran", "Drug", "Hern", 
+               "Marj", "Hash", "Inhl", "Hall", "Amph")
+dimnames(DRUGcorr) <- list(DRUGnames, DRUGnames)
+DRUGcorr <- DRUGcorr + t(DRUGcorr)
+diag(DRUGcorr) <- diag(DRUGcorr) - 1
+DRUGcorr
+
+DRUGmodel <-specifyModel(text = "
+
+Alcohol   -> Cigs,  lambda[1],NA
+Cannabis  -> Cigs,  lambda[2],NA
+Alcohol   -> Beer,  lambda[3],NA
+Alcohol   -> Wine,  lambda[4],NA
+Cannabis  -> Wine,  lambda[5],NA
+Alcohol   -> Liqr,  lambda[6],NA
+HardDrug  -> Liqr,  lambda[7],NA
+HardDrug  -> Cocn,  lambda[8],NA
+HardDrug  -> Tran,  lambda[9],NA
+HardDrug  -> Drug,  lambda[10],NA
+HardDrug  -> Hern,  lambda[11],NA
+Cannabis  -> Marj,  lambda[12],NA
+Cannabis  -> Hash,  lambda[13],NA
+HardDrug  -> Hash,  lambda[14],NA
+HardDrug  -> Inhl,  lambda[15],NA
+HardDrug  -> Hall,  lambda[16],NA
+HardDrug  -> Amph,  lambda[17],NA
+
+Cigs     <-> Cigs,  u[1],NA
+Beer     <-> Beer,  u[2],NA
+Wine     <-> Wine,  u[3],NA
+Liqr     <-> Liqr,  u[4],NA
+Cocn     <-> Cocn,  u[5],NA
+Tran     <-> Tran,  u[6],NA
+Drug     <-> Drug,  u[7],NA
+Hern     <-> Hern,  u[8],NA
+Marj     <-> Marj,  u[9],NA
+Hash     <-> Hash,  u[10],NA
+Inhl     <-> Inhl,  u[11],NA
+Hall     <-> Hall,  u[12],NA
+Amph     <-> Amph,  u[13],NA
+
+Alcohol  <-> Cannabis, rho[1],NA
+Alcohol  <-> HardDrug, rho[2],NA
+Cannabis <-> HardDrug, rho[3],NA
+
+Alcohol  <-> Alcohol, NA,1
+Cannabis <-> Cannabis,NA,1
+HardDrug <-> HardDrug,NA,1
+
+")
+
+options(fit.indices = c("CFI", "NNFI", "RMSEA", "SRMR")) # (NNFI = TLI)
+
+DRUGsem <- sem(DRUGmodel, DRUGcorr, N = 1634)
+```
+\pagebreak
+```{r, out.width='100%', fig.width=6, fig.height=6}
+semPaths(DRUGsem, # filetype = "pdf", filename = "DRUGmodel-KV",
+         what = "path", whatLabels = "hide", 
+         style = "lisrel", layout = "tree2", 
+         residuals = TRUE, rotation = 2, nCharNodes = 0, 
+         sizeMan = 8, sizeLat = 10, sizeMan2 = 4, sizeLat2 = 10, 
+         esize = 2, label.cex = 0.75, label.scale = FALSE, width = 6, height = 5)
+
+```
+\pagebreak
+
+## Table 16.3
+
+```{r}
+summary(DRUGsem)
+```
+\pagebreak
+
+# Figure 16.3: Corrgram for the Systems Intelligence data
+
+**Source of data**: Törmänen, J., Hämäläinen, R. P. and Saarinen, E. (2016). Systems Intelligence
+inventory. *The Learning Organization*, 23, 218–231. (The data and parts of the R code by *Juha Törmänen* are used below with kind permission from the authors.)
+
+**See also**:
+
+- Saarinen, E. and Hämäläinen, R. P. (2004). Systems intelligence: Connecting engineering thinking with human sensitivity. In *Systems Intelligence—Discovering a Hidden Competence in Human Action and Organizational Life* (eds. R. P. Hämäläinen and E. Saarinen). Helsinki University of Technology, Research Reports A88. http://sal.aalto.fi/publications/pdffiles/systemsintelligence2004.pdf.
+
+- Hämäläinen, R. P., Jones, R. and Saarinen, E. (2014). *Being Better Better: Living with Systems Intelligence.* Aalto University Publications Crossover 4/2014, http://systemsintelligence.aalto.fi/being_better_better/. 
+
+```{r}
+# Set seed to remove effect of random generator
+set.seed(42)
+
+# Load data (sidata.csv contains renamed answer columns with names si1-si32)
+si_cfa <- list()
+si_cfa$data <- read.csv2('data/sidata.csv')
+si_cfa$dataset <- si_cfa$data$set
+
+# SI model answers for the 32 items
+si_cfa$answers <- si_cfa$data[, 10:41]
+
+head(si_cfa$answers)
+```
+\pagebreak
+```{r, out.width='100%', fig.width=6, fig.height=6}
+#install.packages("corrplot")
+library(corrplot)
+
+mcor <- cor(si_cfa$answers, use = "complete.obs")
+# Add leading zeros to var names for the "alphabet" option of corrplot:
+rownames(mcor) <- c("si01", "si02", "si03", "si17", "si13", "si14", "si15", "si04",
+                    "si25", "si05", "si26", "si06", "si27", "si28", "si07", "si18", 
+                    "si20", "si21", "si09", "si10", "si11", "si22", "si08", "si23", 
+                    "si19", "si16", "si29", "si30", "si12", "si24", "si31", "si32")
+colnames(mcor) <- rownames(mcor)
+corrplot(mcor, method = "shade", order = "alphabet", 
+               tl.cex = 0.7, tl.col = "black", tl.srt = 45)
+
+```
+\pagebreak
+
+## Figure 16.4
+
+```{r}
+# DATA: Validation dataset rows with no missing data (N=815):
+si_cfa$data.validation <- si_cfa$data[rowSums(is.na(si_cfa$answers)) == 0 &
+                                                    si_cfa$dataset == 'validation', ]
+
+# MODEL: Eight factors, free loadings:
+# Free weight model: Each item is explained by one factor, factors have unit variance
+# In total 8*4 loadings + 7*8/2 factor covariances + 8*4 item variances = 92 parameters
+
+model.8free <- specifyEquations(text = "
+
+si1  =  a1(1)*PER
+si2  =  a2(1)*PER
+si3  =  a3(1)*PER
+si4  =  a4(1)*PER
+
+si5  =  a5(1)*ATT
+si6  =  a6(1)*ATT
+si7  =  a7(1)*ATT
+si8  =  a8(1)*ATT
+
+# ATD factor starting values coded negatively here; othersize sem has trouble converging
+si9  =  a9(1)*ATD
+si10 = a10(-1)*ATD
+si11 = a11(1)*ATD
+si12 = a12(1)*ATD
+
+si13 = a13(1)*DIS
+si14 = a14(1)*DIS
+si15 = a15(1)*DIS
+si16 = a16(1)*DIS
+
+si17 = a17(1)*REF
+si18 = a18(1)*REF
+si19 = a19(1)*REF
+si20 = a20(1)*REF
+
+si21 = a21(1)*WIS
+si22 = a22(1)*WIS
+si23 = a23(1)*WIS
+si24 = a24(1)*WIS
+
+si25 = a25(1)*ENG
+si26 = a26(1)*ENG
+si27 = a27(1)*ENG
+si28 = a28(1)*ENG
+
+si29 = a29(1)*EFF
+si30 = a30(-1)*EFF
+si31 = a31(1)*EFF
+si32 = a32(1)*EFF
+
+V(PER) = 1
+V(ATT) = 1
+V(ATD) = 1
+V(DIS) = 1
+V(REF) = 1
+V(WIS) = 1
+V(ENG) = 1
+V(EFF) = 1
+
+", covs = "PER,ATT,ATD,DIS,REF,WIS,ENG,EFF")
+
+options(fit.indices = c("SRMR", "CFI", "RMSEA"))
+
+res.8free <- sem(model = model.8free, data = si_cfa$data.validation, objective = objectiveGLS)
+# summary(res.8free) outputs CFI = 0.951, RMSEA = 0.048, SRMR = 0.068
+
+semPaths(res.8free, # filetype = "pdf", filename = "SImodel-KV",
+         what = "path", whatLabels = "hide", style = "lisrel",
+         residuals = TRUE, curve = 3.2, rotation = 4, nCharNodes = 0,
+         sizeLat = 7, sizeMan = 3, sizeMan2 = 2,  esize = 1.3, mar = c(3, 8, 3, 15))
+```
+\pagebreak
+```{r}
+summary(res.8free)
+```
+\pagebreak
+
+# Figure 16.5: Path diagram for the hypothesized structural equation model for job satisfaction data
+
+**Source of data**: Kline, R. B. (2016). *Principles and Practice of Structural Equation Modeling*,
+4th edition. Guilford Press, New York.
+
+```{r}
+# Modified from https://www.guilford.com/add/kline/houghton-lavaan.r
+
+# Fully latent model of thought strategies and job satisfaction
+
+#install.packages("lavaan")
+library(lavaan)
+
+# Input the correlations in lower diagonal form
+houghtonLower.cor <- '
+1.000
+ .668 1.000
+ .635  .599 1.000
+ .263  .261  .164 1.000
+ .290  .315  .247  .486 1.000
+ .207  .245  .231  .251  .449 1.000
+-.206 -.182 -.195 -.309 -.266 -.142 1.000 
+-.280 -.241 -.238 -.344 -.305 -.230  .753 1.000
+-.258 -.244 -.185 -.255 -.255 -.215  .554  .587 1.000 
+ .080  .096  .094 -.017  .151  .141 -.074 -.111  .016 1.000
+ .061  .028 -.035 -.058 -.051 -.003 -.040 -.040 -.018  .284 1.000
+ .113  .174  .059  .063  .138  .044 -.119 -.073 -.084  .563  .379 1.000 '
+
+# Name the variables and convert to full correlation matrix
+# KV: change names of manifest and factor variables (more according to the article diagram):
+
+houghtonFull.cor <- getCov(houghtonLower.cor, 
+         names = c("JW1","JW2","JW3", "UF1","UF2","FOR", "DA1","DA2","DA3", "EBA","ST","MI"))
+
+# add the standard deviations and convert to covariances
+houghtonFull.cov <- cor2cov(houghtonFull.cor, 
+         sds = c(0.939, 1.017, 0.937, 0.562, 0.760, 0.524, 0.585, 0.609, 0.731, 0.711, 1.124, 1.001))
+houghtonFull.cov
+
+# Specify SEM (with Lavaan notation):
+
+JSmodel <- '
+
+# measurement part
+CTS =~ EBA + ST + MI
+DTP =~ DA1 + DA2 + DA3
+SWB =~ UF1 + UF2 + FOR
+JS =~ JW1 + JW2 + JW3
+
+# error covariance
+UF1 ~~ FOR
+
+# structural part
+DTP ~ CTS
+SWB ~ CTS + DTP
+JS  ~ CTS + DTP + SWB 
+'
+
+options(fit.indices = c("CFI", "NNFI", "RMSEA", "SRMR")) # (NNFI = TLI)
+
+# fit JSmodel to data
+JSsem <- sem(JSmodel, sample.cov = houghtonFull.cov, sample.nobs = 263)
+
+longLabels = c("JW1","JW2","JW3", "UF1","UF2","FOR", "DA1","DA2","DA3", "EBA","ST","MI",
+               "Constructive \n Thought \n Strategies",
+               "Dysfunctional \n Thought \n Processes",
+               "Subjective \n Well-Being",
+               "Job \n Satisfaction")
+
+semPaths(JSsem, # filetype = "pdf", filename = "JSmodel-KV", 
+         what = "path", whatLabels = "hide", style = "lisrel", layout = "tree2", 
+         residuals = TRUE, nodeLabels = longLabels, nCharNodes = 0, 
+         sizeMan = 4.5, sizeLat = 14, sizeLat2 = 10, 
+         esize = 2, label.cex = 0.7, label.scale = FALSE, width = 6, height = 5)
+
+summary(JSsem, fit.measures = TRUE, standardized = TRUE, rsquare = TRUE)
+```

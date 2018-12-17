@@ -1,0 +1,104 @@
+---
+title:  |  
+  |  *Multivariate Analysis for the Behavioral Sciences,*
+  |  Second Edition (Chapman and Hall/CRC, 2019)
+  |  **Exercises of Chapter 16:**
+  |  **Confirmatory Factor Analysis and Structural Equation Models**
+author: "Kimmo Vehkalahti and Brian S. Everitt"
+date: "17 December 2018"
+output: 
+  pdf_document:
+    number_sections: no
+    toc: no
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Exercises
+
+## Exercise 16.1
+
+Use the matrix R below, modifying the related R code given in the **Examples of Chapter 16**. (See also Exercise 15.4.)
+
+```{r}
+R <- c(
+        1.00,-0.04, 0.61, 0.45, 0.03,-0.29,-0.30, 0.45, 0.30,
+       -0.04, 1.00,-0.07,-0.12, 0.49, 0.43, 0.30,-0.31,-0.17,
+        0.61,-0.07, 1.00, 0.59, 0.03,-0.13,-0.24, 0.59, 0.32,
+        0.45,-0.12, 0.59, 1.00,-0.08,-0.21,-0.19, 0.63, 0.37,
+        0.03, 0.49, 0.03,-0.08, 1.00, 0.47, 0.41,-0.14,-0.24,
+       -0.29, 0.43,-0.13,-0.21, 0.47, 1.00, 0.63,-0.13,-0.15,
+       -0.30, 0.30,-0.24,-0.19, 0.41, 0.63, 1.00,-0.26,-0.29,
+        0.45,-0.31, 0.59, 0.63,-0.14,-0.13,-0.26, 1.00, 0.40,
+        0.30,-0.17, 0.32, 0.37,-0.24,-0.15,-0.29, 0.40, 1.00
+      )
+R <- matrix(R, ncol = 9, byrow = TRUE)
+R
+```
+\pagebreak
+
+## Exercise 16.2
+
+Use the matrices below, modifying the related R code given in the **Examples of Chapter 16**.
+
+**Source of data**: Yule, W., Berger, M., Butler, S., Newham, V. and Tizard, J. (1969). The WPPSI: An empirical evaluation with a British sample. *British Journal of Educational Psychology*, 39, 1–13.
+
+```{r}
+#install.packages("lavaan")
+library(lavaan)
+
+# 'good' readers:
+goodCov <- getCov('
+ 6.92
+ 2.75  6.55
+ 2.23  1.86 6.50
+ 1.62  1.55 1.88 5.20
+ 2.45  2.23 1.77 1.14 3.72
+-0.28  0.78 1.24 1.31 0.85 4.84
+ 0.63  1.36 1.24 0.99 1.06 2.27 7.02
+-0.64 -0.34 0.59 0.38 0.78 1.70 2.41 6.00
+ 1.07  0.20 1.67 1.50 1.34 0.23 1.00 2.55 8.76
+ 0.63  0.97 2.36 1.96 1.09 1.32 2.81 2.38 2.20 5.06 ')
+
+# 'poor' readers:
+poorCov <- getCov('
+ 9.06
+ 6.12 10.05
+ 4.76  4.43 5.71
+ 3.90  4.11 2.42 5.62
+ 5.36  6.10 3.88 3.06 7.95
+ 3.05  2.01 2.12 2.45 1.27 6.97
+ 4.07  3.86 3.28 2.40 3.18 2.53 5.43
+ 4.08  3.28 2.42 1.59 3.52 1.61 3.86 8.70
+ 3.54  2.45 2.96 1.69 3.08 0.82 1.64 3.69 9.55
+ 3.43  4.29 3.13 2.05 2.83 3.06 3.17 4.70 2.97 5.95 ')
+
+```
+\pagebreak
+
+## Exercise 16.3
+
+Use the matrix R below, modifying the related R code given in the **Examples of Chapter 16**.
+
+**Source of data**: Smith, D. A. and Patterson, E. B. (1984). Applications and a generalization of MIMIC models to criminological research. *Journal of Research in Crime and Delinquency*, 21, 333–352.
+
+```{r}
+#install.packages("lavaan")
+library(lavaan)
+
+R <- cov2cor(getCov('
+ 1.00
+ 0.58  1.00
+ 0.54  0.60  1.00
+ 0.17  0.24  0.25  1.00
+-0.01 -0.14 -0.13 -0.18  1.00
+-0.02 -0.09 -0.09 -0.15  0.24  1.00
+ 0.22  0.22  0.18  0.17 -0.03 -0.10 1.00 '))
+
+varNames <- c("Robbery", "Burglary", "Vandalism", "Prior V", "Age", "Female", "VRATE")
+dimnames(R) <- list(varNames, varNames)
+R
+
+```
