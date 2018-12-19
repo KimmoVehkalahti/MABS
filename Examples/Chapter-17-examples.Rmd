@@ -1,0 +1,254 @@
+---
+title:  |  
+  |  *Multivariate Analysis for the Behavioral Sciences,*
+  |  Second Edition (Chapman and Hall/CRC, 2019)
+  |  **Examples of Chapter 17:**
+  |  **Cluster Analysis**
+author: "Kimmo Vehkalahti and Brian S. Everitt"
+date: "18 December 2018"
+output: 
+  pdf_document:
+    number_sections: no
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+\pagebreak
+
+# Examples
+
+# Table 12.1: Chest, Waist, and Hip Measurements of 20 Individuals
+
+This data set was introduced in **Chapter 12** and it is briefly revisited here.
+
+```{r}
+body <- structure(list(
+  Chest = c(34, 37, 38, 36, 38, 43, 40, 38, 40, 41, 36, 36, 34, 33, 36, 37, 34, 36, 38, 35), 
+  Waist = c(30, 32, 30, 33, 29, 32, 33, 30, 30, 32, 24, 25, 24, 22, 26, 26, 25, 26, 28, 23), 
+  Hips = c(32, 37, 36, 39, 33, 38, 42, 40, 37, 39, 35, 37, 37, 34, 38, 37, 38, 37, 40, 35)), 
+  .Names = c("Chest", "Waist", "Hips"), row.names = c(NA, -20L), class = "data.frame")
+body
+```
+\pagebreak
+
+## Figure 17.5
+
+```{r, out.width='100%', fig.width=6, fig.height=6}
+attach(body)
+distances <- dist(body)
+
+body_sl3 <- cutree(hclust(distances, method = "single"), h=3.8)
+body_cl2 <- cutree(hclust(distances, method = "complete"), h=10)
+body_al2 <- cutree(hclust(distances, method = "average"), h=7.8)
+
+layout(matrix(c(1,2,3,4,5,6), 2, 3, byrow=TRUE), c(1,1,1), c(2,1), TRUE)
+
+plot(hclust(distances, method = "single"), ylab =" Height", sub = "Single linkage")
+plot(hclust(distances, method = "complete"), ylab =" Height", sub = "Complete linkage")
+plot(hclust(distances, method = "average"), ylab = "Height", sub = "Average linkage")
+
+body_pc <- princomp(body)
+xlim <- range(body_pc$scores[, 1])
+
+plot(body_pc$scores[, 1:2], type = "n",xlim = xlim, ylim =xlim)
+text(body_pc$scores[, 1:2], labels = body_sl3, cex=0.8)
+
+plot(body_pc$scores[, 1:2], type = "n",xlim = xlim, ylim = xlim)
+text(body_pc$scores[, 1:2], labels = body_cl2, cex=0.8)
+
+plot(body_pc$scores[, 1:2], type = "n", xlim = xlim, ylim = xlim)
+text(body_pc$scores[, 1:2], labels = body_al2, cex=0.8)
+
+detach(body)
+```
+\pagebreak
+
+# Table 17.1: Life Expectancies at Different Ages for Men in Seven Countries
+
+```{r}
+library(dplyr)
+W16M50 <- read.csv("data/w16m50.csv")
+countries <- W16M50$country
+row.names(W16M50) <- countries
+W16M50 <- W16M50 %>% select(-country)
+
+W16M50[c("Japan", "Italy", "Spain", "United Kingdom", "Finland", "Cuba", "United States"), ]
+
+var(W16M50)
+```
+\pagebreak
+
+## Figure 17.6
+
+```{r}
+distances <- dist(W16M50)
+hclu <- hclust(distances, method = "complete")
+
+#install.packages("ggdendro")
+library(ggdendro)
+library(ggplot2)
+
+p1 <- ggdendrogram(hclu, rotate = TRUE, theme_dendro = FALSE)
+p2 <- p1 + theme_bw()
+p3 <- p2 + scale_y_continuous(name = "Height", breaks = seq(0, 25, 5)) # obs: rotation!
+p4 <- p3 + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+p5 <- p4 + xlab("") # obs: rotation!
+p6 <- p5 + theme(axis.text.y = element_text(color = "black", size = 7)) # obs: rotation!
+p6
+```
+\pagebreak
+
+## Figure 17.7
+
+```{r, fig.width=6, fig.height=6}
+life_cl4 <- cutree(hclu, k=4)
+pairs(W16M50, panel = function(x,y) text(x, y, labels = life_cl4, cex=1.0))
+
+```
+\pagebreak
+
+## Figure 17.8
+
+```{r, out.width='100%'}
+life_pc <- princomp(W16M50, cor = TRUE)
+pc_scores <- as.data.frame(life_pc$scores)
+pc_scores <- cbind(pc_scores, life_cl4)
+pc_scores$life_cl4 <- as.factor(pc_scores$life_cl4)
+
+pcvar <- round(100 * life_pc$sdev / sum(life_pc$sdev), 2)
+xlabel <- paste("PC 1 (", pcvar[1], " %)", sep = "")
+ylabel <- paste("PC 2 (", pcvar[2], " %)", sep = "")
+
+p1 <- ggplot(pc_scores, aes(x = Comp.1, y = Comp.2, colour = life_cl4))
+# p1 <- ggplot(pc_scores, aes(x = Comp.1, y = Comp.2)) # b&w points (book)
+p2 <- p1 + geom_text(aes(label = life_cl4), size=3)
+p3 <- p2 + geom_text(aes(label = countries), position = position_nudge(y = -0.15), size=1.5)
+p4 <- p3 + scale_x_continuous(name = xlabel, 
+                              breaks = seq(-4, 3, 1)) + scale_y_continuous(name = ylabel)
+p5 <- p4 + theme_bw()
+p6 <- p5 + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+                 legend.position = "none")
+p7 <- p6 + coord_fixed(ratio = 1)
+p7
+
+```
+\pagebreak
+
+## Table 17.2
+
+```{r}
+country.mean <- lapply(1:4, function(nc) apply(W16M50[life_cl4 == nc, ], 2, mean))
+country.clus <- lapply(1:4, function(nc) countries[life_cl4 == nc])
+
+country.mean
+country.clus
+```
+\pagebreak
+
+# Figure 17.9: Plot of within-groups sum of squares against number of clusters
+
+See **Chapter 13**, where this data set was used for the first time.
+
+```{r}
+crime <- read.table("data/crime.txt", sep = '\t')
+rlabs <- row.names(crime)
+
+head(crime)
+# DC (outlier, see Chapter 13):
+crime[24, ]
+
+# remove DC:
+crime <- crime[-24, ]
+
+# variances:
+apply(crime, 2, var)
+
+# standardize by range
+rge <- apply(crime, 2, max) - apply(crime, 2, min)
+crime_std <- sweep(crime, 2, rge, FUN = "/")
+
+# variances of the std data:
+apply(crime_std, 2, var)
+```
+\pagebreak
+```{r}
+# plot of wgss against number of clusters:
+n <- length(crime_std[, 1])
+wss1 <- (n-1) * sum(apply(crime_std, 2, var))
+wss <- numeric(0)
+for(i in 2:6) {
+    W <- sum(kmeans(crime_std, i)$withinss)
+    wss <- c(wss, W)
+}
+wss <- c(wss1, wss)
+plot(1:6, wss, type = "l", 
+     xlab = "Number of groups", ylab = "Within groups sum of squares", lwd=2)
+
+```
+\pagebreak
+
+## Table 17.3
+
+```{r}
+# get two-group solution from k-means and group means and membership
+crime_kmean2 <- kmeans(crime_std, 2)
+lapply(1:2, function(nc) apply(crime[crime_kmean2$cluster == nc, ], 2, mean))
+lapply(1:2, function(nc) rlabs[crime_kmean2$cluster == nc])
+```
+\pagebreak
+
+## Figure 17.10
+
+```{r}
+crime_pc <- princomp(crime_std, cor = TRUE)
+xlim <- range(crime_pc$scores[, 1])
+plot(crime_pc$scores[, 1:2], type = "n", xlim = xlim, ylim = xlim)
+text(crime_pc$scores[, 1:2], labels = crime_kmean2$cluster, cex=0.8)
+
+```
+
+\pagebreak
+
+# Table 17.4: Proportion of Respondents Answering Yes to Each of the Questions in the Survey of Gastroenterologists
+
+```{r}
+prop <- read.table("data/prop.txt", sep = '\t')
+options(digits=3)
+prop
+```
+\pagebreak
+
+## Figure 17.11
+
+```{r}
+#install.packages("mclust")
+library(mclust)
+
+# obs: seeking a correspondence with the 1st ed. (2009) version that was done
+# using mclust ver.2 (whereas the results below were achieved with mclust ver.5):
+prop_mclust <- Mclust(prop, modelNames = c("EII", "VII", "EEI", "VVI", "EEE", "VVV"))
+plot(prop_mclust, what = "BIC", symbols = c("5","2","1","6","3","4"), 
+     xlab = "Number of Clusters", ylim = c(-110,50))
+# Note:
+# "EII" = spherical, equal volume
+# "VII" = spherical, unequal volume
+# "EEI" = diagonal, equal volume and shape
+# "VVI" = diagonal, varying volume and shape
+# "EEE" = ellipsoidal, equal volume, shape, and orientation
+# "VVV" = ellipsoidal, varying volume, shape, and orientation
+# (there are several more options in mclust ver.5)
+
+```
+\pagebreak
+
+## Table 17.5
+
+```{r}
+# obs: the optimal model (4: "VVV") with mclust ver.5 has only two clusters
+prop_mclust$parameters$mean[, 1]
+prop_mclust$parameters$mean[, 2]
+row.names(prop)[prop_mclust$classification == 1]
+row.names(prop)[prop_mclust$classification == 2]
+```

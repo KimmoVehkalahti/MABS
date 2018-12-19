@@ -35,6 +35,8 @@ R <- c(
         0.30,-0.17, 0.32, 0.37,-0.24,-0.15,-0.29, 0.40, 1.00
       )
 R <- matrix(R, ncol = 9, byrow = TRUE)
+vars <- c("pfuture", "pme", "pdoc", "pseek", "pexerf", "pcareless", "pmyresp", "pcontdoc", "pnplucky")
+dimnames(R) <- list(vars, vars)
 R
 ```
 \pagebreak
