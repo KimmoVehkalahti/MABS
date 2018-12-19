@@ -192,9 +192,9 @@ inventory. *The Learning Organization*, 23, 218–231. (The data and parts of th
 # Set seed to remove effect of random generator
 set.seed(42)
 
-# Load data (sidata.csv contains renamed answer columns with names si1-si32)
+# Load data (sidata.tsv contains renamed answer columns with names si1-si32)
 si_cfa <- list()
-si_cfa$data <- read.csv2('data/sidata.csv')
+si_cfa$data <- read.table("data/sidata.tsv", header = TRUE, sep = '\t')
 si_cfa$dataset <- si_cfa$data$set
 
 # SI model answers for the 32 items
