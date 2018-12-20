@@ -1,0 +1,75 @@
+---
+title:  |  
+  |  *Multivariate Analysis for the Behavioral Sciences,*
+  |  Second Edition (Chapman and Hall/CRC, 2019)
+  |  **Solutions to Exercises of Chapter 18:**
+  |  **Grouped Multivariate Data**
+author: "Kimmo Vehkalahti and Brian S. Everitt"
+date: "20 December 2018"
+output: 
+  pdf_document:
+    number_sections: no
+    toc: no
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Solutions
+
+## Exercise 18.4
+
+```{r, fig.width=6, fig.height=6}
+pottery <- read.csv("data/pottery.csv")
+str(pottery)
+head(pottery)
+
+pottery_manova <- manova(cbind(AL2O3, FE2O3, MGO, CAO, NA2O, K2O, TIO2, MNO) ~ kiln,
+                         data = pottery)
+
+summary(pottery_manova, test = "Pillai")
+summary(pottery_manova, test = "Wilks")
+summary(pottery_manova, test = "Hotelling")
+summary(pottery_manova, test = "Roy")
+# all highly significant
+
+region <- rep(1, length(pottery$kiln))
+region[pottery$kiln == 2 | pottery$kiln == 3] <- 2
+region[pottery$kiln == 4 | pottery$kiln == 5] <- 3
+
+# calculate means of each region
+m1 <- apply(pottery[region == 1, -1], 2, mean)
+m2 <- apply(pottery[region == 2, -1], 2, mean)
+m3 <- apply(pottery[region == 3, -1], 2, mean)
+
+# find numbers in each class
+n1 <- length(pottery[region==1, 1])
+n2 <- length(pottery[region==2, 1])
+n3 <- length(pottery[region==3, 1])
+
+# find pooled covariance matrix
+S123 <- ((n1-1)*var(pottery[region==1, -1]) + 
+         (n2-1)*var(pottery[region==2, -1]) +
+         (n3-1)*var(pottery[region==3, -1])) / ((n1-1)+(n2-1)+(n3-1))
+
+# find coefficients for each classification class
+invS <- solve(S123)
+a1 <- invS %*% (m1-m2)
+a2 <- invS %*% (m1-m3)
+a3 <- invS %*% (m2-m3)
+
+# find thresholds
+z12 <-(m1 %*% a1 + m2 %*% a1) / 2
+z13 <-(m1 %*% a2 + m3 %*% a2) / 2
+z23 <-(m2 %*% a3 + m3 %*% a3) / 2
+
+# new pot with the following chemical composition:
+newvalues<-c(15.5, 5.71, 2.07, 0.98, 0.65, 3.01, 0.76, 0.09, 0.012)
+
+(newvalues - as.vector(z12)) %*% a1
+(newvalues - as.vector(z13)) %*% a2
+(newvalues - as.vector(z23)) %*% a3
+# conclusion: allocate to region 2 (plot a graph!)
+
+```

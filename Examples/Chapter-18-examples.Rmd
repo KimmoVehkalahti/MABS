@@ -1,0 +1,297 @@
+---
+title:  |  
+  |  *Multivariate Analysis for the Behavioral Sciences,*
+  |  Second Edition (Chapman and Hall/CRC, 2019)
+  |  **Examples of Chapter 18:**
+  |  **Grouped Multivariate Data**
+author: "Kimmo Vehkalahti and Brian S. Everitt"
+date: "20 December 2018"
+output: 
+  pdf_document:
+    number_sections: no
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+\pagebreak
+
+# Examples
+
+# Table 18.1: Wechsler Adult Intelligence IQ Scores for Five Men and Five Women
+
+**Source of data**: Willerman, L., Schultz, R., Rutledge, J. N. and Bigler, E. D. (1991). In vivo
+brain size and intelligence. *Intelligence*, 15, 223–228. https://doi.org/10.1016/0160-2896(91)90031-8
+
+```{r}
+iq_scores <- read.csv("data/iq.csv")
+iq_scores[1:5, ]
+iq_scores[21:25, ]
+
+n1 = 20; n2 = 20; q = 3
+sex <- rep(c(1, 2), c(n1, n2))
+
+# Hotelling's T2 test
+m1 <- apply(iq_scores[sex==1, ], 2, mean)
+m2 <- apply(iq_scores[sex==2, ], 2, mean)
+S1 <- var(iq_scores[sex==1, ])
+S2 <- var(iq_scores[sex==2, ])
+
+S <- ((n1-1)*S1 + (n2-1)*S2) / (n1+n2-2)
+T2 <- t(m1-m2) %*% solve(S) %*% (m1-m2)
+F <- (n1+n2-q-1)*T2/((n1+n2-2)*q)
+pvalue <- 1 - pf(F, q, n1+n2-q-1)
+c(T2, F, pvalue) # raw output of the above statistics (see below for an alternative!)
+
+```
+
+Quoting our own text on p.367 (here achieved with \LaTeX{} and inline **R** code of **R Markdown**):
+
+Here, Hotelling's $T^2$ takes the value `r round(T2, digits = 2)`, with the corresponding $F$-statistic being `r round(F, 2)`, having 3 and 36 degrees of freedom; the associated $p$-value is `r round(pvalue, 2)`. There is no evidence of a gender difference on the three measures of IQ.
+
+\pagebreak
+
+# Table 18.2: SIDs Data
+
+**Source of data**: Spicer, C. C., Lawrence, C. J. and Southall, D. P. (1987). Statistical analysis
+of heart rates and subsequent victims of sudden infant death syndrome.
+*Statistics in Medicine*, 6, 159–166. (Appendix II, p.165) https://doi.org/10.1002/sim.4780060208
+
+```{r}
+sid <- read.csv("data/sid.csv")
+sid[45:54, ]
+
+```
+\pagebreak
+
+## Figure 18.2
+
+```{r, out.width='100%', fig.width=6, fig.height=6}
+plot(sid$BW, sid$F68, xlab = "Birth Weight (g)", ylab = "Factor 68", type = "n")
+text(sid$BW, sid$F68, labels = sid$Group)
+legend("topright", c("Controls", "SID victims"), pch = c("1", "2"))
+```
+\pagebreak
+
+## Table 18.3
+
+```{r}
+# Find discriminant function manually using only BW and F68:
+sid1 <- sid[sid$Group == 1, -c(1, 2, 5)]
+sid2 <- sid[sid$Group == 2, -c(1, 2, 5)]
+m1 <- apply(sid1, 2, mean)
+m2 <- apply(sid2, 2, mean)
+S1 <- var(sid1)
+S2 <- var(sid2)
+n1 <- length(sid1[, 1])
+n2 <- length(sid2[, 1])
+S <- ((n1-1)*S1+(n2-1)*S2)/(n1+n2-2)
+a <- solve(S)%*%(m1-m2)
+z1 <- sum(a*m1)
+z2 <- sum(a*m2)
+z <- 0.5*(z1+z2)
+
+# results of the Table briefly (could be more verbose):
+m1; m2
+
+S1; S2
+
+S
+
+a
+
+z1; z2; z
+
+```
+\pagebreak
+```{r}
+# (mis)classification table:
+
+#install.packages("MASS")
+library("MASS")
+
+sid_ldf <- lda(Group ~ BW + F68 + HR + GA, data = sid, prior = c(0.5, 0.5))
+table(sid$Group, predict(sid_ldf)$class)
+
+```
+
+So, the (too optimistic) percentage of misclassifications is $(100\times(8+3)/65) \%$ = `r round(100*(8+3)/65, 1)`%.
+
+\pagebreak
+
+## Figure 18.3
+
+```{r, out.width='100%', fig.width=6, fig.height=6}
+
+plot(sid$BW, sid$F68, xlab = "Birth Weight (g)", ylab = "Factor 68", type = "n")
+text(sid$BW, sid$F68, labels = sid$Group)
+slope <- -a[1]/a[2]
+intercept <- z/a[2]
+abline(a=intercept, b=slope, lwd=2)
+legend("topleft", c("Controls", "SID victims"), pch = c("1", "2"))
+
+```
+\pagebreak
+
+# Table 18.4: Data from Investigation of Risk Taking
+
+**Source of data**: Timm, N. H. (2002). *Applied Multivariate Analysis*. Springer, New York. https://doi.org/10.1007/b98963
+
+```{r}
+Timm <- read.csv("data/Timm.csv")
+str(Timm)
+head(Timm, n = 10)
+tail(Timm, n = 10)
+```
+\pagebreak
+
+## Figure 18.4
+
+```{r, fig.width=6, fig.height=6}
+par(mfrow=c(2,1))
+treatments <- c("AA", "C", "NC")
+ylim <- c(0, 80)
+with(Timm, {
+boxplot(Low[Group==1], Low[Group==2], Low[Group==3], 
+        names = treatments, ylab = "'Low' score",  ylim = ylim)
+  boxplot(High[Group==1], High[Group==2], High[Group==3], 
+        names = treatments, ylab = "'High' score", ylim = ylim)
+})
+
+```
+\pagebreak
+
+## Table 18.5
+
+```{r}
+Timm_manova <- manova(cbind(Low, High) ~ Group, data = Timm)
+summary(Timm_manova, test = "Pillai")
+summary(Timm_manova, test = "Wilks")
+summary(Timm_manova, test = "Hotelling")
+summary(Timm_manova, test = "Roy")
+
+```
+\pagebreak
+
+## Figure 18.5
+
+```{r, fig.width=5, fig.height=5}
+# function copied here from Chapter 12 examples:
+chisplot <- function(x) {
+    if (!is.matrix(x)) stop("x is not a matrix")
+    n <- nrow(x)
+    p <- ncol(x)
+    xbar <- apply(x, 2, mean)
+    S <- var(x)
+    S <- solve(S)
+    index <- (1 : n) / (n + 1)
+    xcent <- t(t(x) - xbar)
+    di <- apply(xcent, 1, function(x,S) x %*% S %*% x, S)
+    
+    quant <- qchisq(index, p)
+    plot(quant, sort(di), 
+         ylab = "Ordered Distances", 
+         xlab = "Chi-square Quantile", 
+         lwd = 2, pch = 1)
+}
+
+chisplot(residuals(Timm_manova))
+abline(a = 0, b = 1)
+```
+\pagebreak
+
+# Table 18.6: fMRI Data
+
+```{r}
+fMRI <- read.csv("data/fMRI.csv")
+head(fMRI, n = 20)
+tail(fMRI, n = 20)
+
+```
+\pagebreak
+
+## Figure 18.6
+
+```{r, fig.width=6, fig.height=6}
+plot(fMRI$T2 ~ fMRI$PD, type = "n", pch = fMRI$Class, xlab = "PD", ylab = "T2")
+text(fMRI$PD, fMRI$T2, labels = fMRI$Class, cex=0.6)
+legend("topleft", c("Grey matter", "White matter", "CSF"), pch = c("1", "2", "3"))
+
+```
+\pagebreak
+
+## Table 18.7
+
+```{r, fig.width=6, fig.height=6}
+Class <- fMRI$Class
+# calculate means of each class
+m1 <- apply(fMRI[Class==1, -3], 2, mean)
+m2 <- apply(fMRI[Class==2, -3], 2, mean)
+m3 <- apply(fMRI[Class==3, -3], 2, mean)
+
+# numbers in each class
+n1 <- length(fMRI[Class==1, 1])
+n2 <- length(fMRI[Class==2, 1])
+n3 <- length(fMRI[Class==3, 1])
+
+# covariance matrices
+S1 <- (n1-1)*var(fMRI[Class==1, -3])/(n1-1)
+S2 <- (n2-1)*var(fMRI[Class==2, -3])/(n2-1)
+S3 <- (n3-1)*var(fMRI[Class==3, -3])/(n3-1)
+
+# pooled covariance matrix
+S123 <- ((n1-1)*var(fMRI[Class==1, -3]) + 
+         (n2-1)*var(fMRI[Class==2, -3]) +
+         (n3-1)*var(fMRI[Class==3,-3])) / (n1+n2+n3-3)
+
+# results briefly:
+m1; m2; m3
+
+c(n1, n2, n3)
+
+S1; S2; S3
+
+S123
+
+```
+\pagebreak
+
+## Table 18.8
+
+```{r, fig.width=6, fig.height=6}
+# coefficients for each classification class
+invS <- solve(S123)
+a1 <- invS%*%(m1-m2)
+a2 <- invS%*%(m1-m3)
+a3 <- invS%*%(m2-m3)
+
+# thresholds
+z12 <- (m1%*%a1+m2%*%a1)/2
+z13 <- (m1%*%a2+m3%*%a2)/2
+z23 <- (m2%*%a3+m3%*%a3)/2
+
+# results (very) briefly:
+
+a1; a2; a3
+
+z12; z13; z23
+
+```
+\pagebreak
+
+## Figure 18.7
+
+```{r, fig.width=6, fig.height=6}
+# code from previous figure:
+plot(fMRI$T2 ~ fMRI$PD, type = "n", pch = fMRI$Class, xlab = "PD", ylab = "T2")
+text(fMRI$PD, fMRI$T2, labels = fMRI$Class, cex=0.6)
+legend("topleft", c("Grey matter", "White matter", "CSF"), pch = c("1", "2", "3"))
+
+# add discriminant functions
+abline(z12/a1[2], -a1[1]/a1[2])
+abline(z13/a2[2], -a2[1]/a2[2], lty=2)
+abline(z23/a3[2], -a3[1]/a3[2], lty=3)
+legend("bottomright", c("Grey/White", "Grey/CSF", "White/CSF"), lty=1:3)
+
+```

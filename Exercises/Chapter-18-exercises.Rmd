@@ -1,0 +1,30 @@
+---
+title:  |  
+  |  *Multivariate Analysis for the Behavioral Sciences,*
+  |  Second Edition (Chapman and Hall/CRC, 2019)
+  |  **Exercises of Chapter 18:**
+  |  **Grouped Multivariate Data**
+thor: "Kimmo Vehkalahti and Brian S. Everitt"
+date: "20 December 2018"
+output: 
+  pdf_document:
+    number_sections: no
+    toc: no
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Exercises
+
+## Exercise 18.4
+
+Use the pottery data below, modifying the related R code given in the **Examples of Chapter 18**.
+
+```{r}
+pottery <- read.csv("data/pottery.csv")
+str(pottery)
+head(pottery)
+
+```
