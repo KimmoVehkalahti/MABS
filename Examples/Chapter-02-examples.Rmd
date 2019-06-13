@@ -20,7 +20,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Table 2.1: Crime Rates for Drinkers and Abstainers
 
-```{r, echo=TRUE}
+```{r}
 drink <- c(50, 88, 155, 379, 81)
 abst <- c(43, 62, 110, 300, 158)
 drink <- 100*drink/sum(drink)
@@ -33,7 +33,7 @@ da
 
 ## Figure 2.1
 
-```{r, echo=TRUE}
+```{r}
 labels <- c("Arson", "Rape", "Violence", "Stealing", "Fraud")
 par(mfrow = c(1,2))
 pie(drink, density = -10, labels = labels, col = 0, lwd = 2)
@@ -46,7 +46,7 @@ title("Abstainers")
 
 ## Figure 2.2
 
-```{r, echo=TRUE}
+```{r}
 par(mfrow = c(1,2))
 labs <- c("A", "R", "V", "S", "F")
 barplot(drink, names.arg = labs, col = 1, lwd = 2, ylab = "Percent", ylim = c(0,55))
@@ -59,7 +59,7 @@ title("Abstainers")
 
 ## Figure 2.3
 
-```{r, echo=TRUE}
+```{r}
 band <- c(7.0, 12.0, 8.0, 13.0, 7.2, 11.5, 7.4, 11.6, 8.2, 12.2)
 labels1 <- paste("Band", 1:10)
 par(mfrow = c(1,1))
@@ -70,7 +70,7 @@ pie(band, density = -10, labels = labels1, col = 0, lwd = 2)
 
 ## Figure 2.4
 
-```{r, echo=TRUE}
+```{r}
 #install.packages("lattice")
 library("lattice")
 dotplot(1:10 ~ band, ylab = "Band", xlab = "Percentage", lwd = 3)
@@ -80,7 +80,7 @@ dotplot(1:10 ~ band, ylab = "Band", xlab = "Percentage", lwd = 3)
 
 ## Figure 2.5
 
-```{r, echo=TRUE}
+```{r}
 library("lattice")
 dimnames(da) <- list(labels, c("Drinkers", "Abstainers"))
 dotplot(da, groups = FALSE, xlab = "Percentage", ylab = "Crime")
@@ -90,7 +90,7 @@ dotplot(da, groups = FALSE, xlab = "Percentage", ylab = "Crime")
 
 ## Figure 2.8
 
-```{r, echo=TRUE}
+```{r}
 life <- c(76, 68, 77, 69, 76, 67, 77, 69, 75, 68, 77, 71, 75, 62, 78, 72, 76, 69, 77, 69)
 life <- matrix(life, ncol = 2, byrow = T)
 countries <- c("Austria", "Canada", "Finland", "France", "Germany",
@@ -111,7 +111,7 @@ Sarkar, D. (2008). *Lattice: Multivariate Data Visualization with R*, Springer.
 
 http://lmdvr.r-forge.r-project.org/
 
-```{r, echo=TRUE}
+```{r}
 library("lattice")
 # B&W version for the book:
 #trellis.device(color = FALSE)
@@ -130,7 +130,7 @@ Sarkar, D. (2008). *Lattice: Multivariate Data Visualization with R*, Springer.
 
 http://lmdvr.r-forge.r-project.org/
 
-```{r, echo=TRUE}
+```{r}
 library("lattice")
 # B&W version for the book:
 #trellis.device(color = FALSE)
@@ -144,7 +144,7 @@ barchart(Class ~ Freq | Sex + Age, data = as.data.frame(Titanic),
 
 ## Table 2.2: Number of “and Then...” Statements Made by 50 Children
 
-```{r, echo=TRUE}
+```{r}
 kids <- c(18, 15, 22, 19, 18, 17, 18, 20, 17, 12, 16, 16, 17, 21, 23, 18, 20,
           21, 20, 20, 15, 18, 17, 19, 20, 23, 22, 10, 17, 19, 19, 21, 20, 18,
           18, 24, 11, 19, 31, 16, 17, 15, 19, 20, 18, 18, 40, 18, 19, 16)
@@ -153,7 +153,7 @@ kids
 
 ## Table 2.3: Number of “and Then...” Statements Made by 50 Adults
 
-```{r, echo=TRUE}
+```{r}
 adults <- c(10, 12, 5, 8, 13, 10, 12, 8, 7, 11, 11, 10, 9, 9, 11, 15, 12,
             17, 14, 10, 9, 8, 15, 16, 10, 14, 7, 16, 9, 1, 4, 11, 12, 7,
             9, 10, 3, 11, 14, 8, 12, 5, 10, 9, 7, 11, 14, 10, 15, 9)
@@ -164,7 +164,7 @@ adults
 
 ## Figure 2.12
 
-```{r, echo=TRUE}
+```{r}
 hist(kids, ylab = "Frequency Count",
      xlab = "Number of 'and then...' statements", main = "")
 ```
@@ -173,7 +173,7 @@ hist(kids, ylab = "Frequency Count",
 
 ## Figure 2.14
 
-```{r, echo=TRUE}
+```{r}
 boxplot(kids, ylab = "Number of 'and then...' statements")
 ```
 
@@ -181,7 +181,7 @@ boxplot(kids, ylab = "Number of 'and then...' statements")
 
 ## Figure 2.15
 
-```{r, echo=TRUE}
+```{r}
 boxplot(kids, adults, names = c("Children", "Adults"),
         ylab = "Number of 'and then...' Statements")
 ```
@@ -190,7 +190,7 @@ boxplot(kids, adults, names = c("Children", "Adults"),
 
 ## Figure 2.16
 
-```{r, echo=TRUE}
+```{r}
 par(mfrow = c(1,2))
 qqnorm(kids, main = "Children")
 qqnorm(adults, main = "Adults")
@@ -200,7 +200,7 @@ qqnorm(adults, main = "Adults")
 
 ## Table 2.4: Field Dependence Measure and Time to Complete a Task
 
-```{r, echo=TRUE}
+```{r}
 #time to complete test; row and corner group data
 timer <- c(317, 464, 525, 298, 491, 196, 268, 372, 370, 739, 430, 410)
 eftr <- c(59, 33, 49, 69, 65, 26, 29, 62, 31, 139, 74, 31)
@@ -214,7 +214,7 @@ te2
 
 ## Figure 2.17
 
-```{r, echo=TRUE}
+```{r}
 par(mfrow = c(2,1), mar = c(2, 4, 2, 0.1))
 plot(eftr, timer, xlim = range(c(eftr, eftc)), ylim = range(c(timer, timec)),
      xlab = "EFT", ylab = "Completion time (secs)")
@@ -228,7 +228,7 @@ title(main = "Corner group")
 
 ## Figure 2.18
 
-```{r, echo=TRUE}
+```{r}
 par(mfrow = c(2,1), mar = c(2, 4, 2, 0.1))
 plot(eftr, timer, xlim = range(c(eftr, eftc)), ylim = range(c(timer, timec)),
      xlab = "EFT", ylab = "Completion time (secs)")
@@ -244,7 +244,7 @@ abline(lm(timec ~ eftc))
 
 ## Figure 2.19
 
-```{r, echo=TRUE}
+```{r}
 par(mfrow = c(1,1), mar = c(4, 4, 1, 0.1))
 plot(eftr, timer, xlim = range(c(eftr, eftc)), ylim = range(c(timer, timec)),
      xlab = "EFT", ylab = "Completion time (secs)", pch = "R")
@@ -258,7 +258,7 @@ legend("topleft", legend = c("Row group fit", "Column group fit"), lty = 1:2)
 
 ## Table 2.5: Time Spent Looking After Car
 
-```{r, echo=TRUE}
+```{r}
 sex <- c(1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0,
          0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1)
 age <- c(55, 43, 57, 26, 22, 32, 26, 29, 40, 30, 34, 44, 49, 22, 34, 47,
@@ -279,7 +279,7 @@ head(carclean)
 
 ## Figure 2.20
 
-```{r, echo=TRUE}
+```{r}
 # nf <- layout(matrix(c(2,0,1,3), 2, 2, byrow = TRUE), c(2,1), c(1,2), TRUE)
 par(mfrow = c(1,1), mar = c(4, 4, 1, 0.1))
 psymb <- as.numeric(sex)
@@ -300,7 +300,7 @@ boxplot(time, ylab = "Age")
 
 ## Figure 2.21
 
-```{r, echo=TRUE}
+```{r}
 # nf <- layout(matrix(c(2,0,1,3), 2, 2, byrow = TRUE), c(2,1), c(1,2), TRUE)
 par(mfrow = c(1,1), mar = c(4, 4, 1, 0.1))
 psymb <- as.numeric(sex)
@@ -321,7 +321,7 @@ boxplot(time, ylab = "Extroversion")
 
 ## Figure 2.22
 
-```{r, echo=TRUE}
+```{r}
 par(mfrow = c(1,1), mar = c(4, 4, 1, 0.1))
 psymb <- as.numeric(sex)
 plot(time ~ age, pch = psymb, xlim = c(20, 65), ylim = c(10, 115),
@@ -333,7 +333,7 @@ symbols(age, time, circles = extro, inches = 0.4, add = TRUE)
 
 ## Figure 2.24
 
-```{r, echo=TRUE}
+```{r}
 #install.packages("MVA")
 library("MVA")
 bvbox(cbind(age, time), mtitle = "", xlab = "Age (years)",
@@ -343,7 +343,7 @@ bvbox(cbind(age, time), mtitle = "", xlab = "Age (years)",
 
 ## Figure 2.25
 
-```{r, echo=TRUE}
+```{r}
 #install.packages("MVA")
 library("MVA")
 bvbox(cbind(extro, time), mtitle = "", xlab = "Extroversion score",
@@ -353,7 +353,7 @@ bvbox(cbind(extro, time), mtitle = "", xlab = "Extroversion score",
 
 ## Table 2.6: Measure of Resistance Made on Five Different Types of Electrode
 
-```{r, echo=TRUE}
+```{r}
 resis <- c(500, 400, 98, 200, 250, 660, 600, 600, 75, 310, 250, 370,
            220, 250, 220, 72, 140, 240, 33, 54, 135, 300, 450, 430, 70,
            27, 84, 135, 190, 180, 100, 50, 82, 73, 78, 105, 180, 32,
@@ -369,14 +369,14 @@ resis
 
 ## Figure 2.26
 
-```{r, echo=TRUE}
+```{r}
 pairs(resis)
 ```
 \pagebreak
 
 ## Figure 2.27
 
-```{r, echo=TRUE}
+```{r}
 #install.packages("MVA")
 library("MVA")
 bvbox(resis[, c(1, 2)], mtitle = "",
@@ -394,7 +394,7 @@ cor(resis[-c(1, 2, 15), c(1, 2)])
 
 ## Figure 2.28
 
-```{r, echo=TRUE}
+```{r}
 coplot(time ~ extro | sex, panel = function(x, y, col, pch) {
                                        points(x, y)
                                        abline(lm(y ~ x))
@@ -404,7 +404,7 @@ coplot(time ~ extro | sex, panel = function(x, y, col, pch) {
 
 ## Figure 2.29
 
-```{r, echo=TRUE}
+```{r}
 coplot(time ~ extro | age, panel = function(x, y, col, pch) {
                                        points(x, y)
                                        abline(lm(y ~ x))
@@ -420,7 +420,7 @@ Sarkar, D. (2008). *Lattice: Multivariate Data Visualization with R*, Springer.
 
 http://lmdvr.r-forge.r-project.org/
 
-```{r, echo=TRUE}
+```{r}
 library(lattice)
 data(postdoc, package = "latticeExtra")
 barchart(prop.table(postdoc, margin = 1), xlab = "Proportion",
@@ -436,7 +436,7 @@ Sarkar, D. (2008). *Lattice: Multivariate Data Visualization with R*, Springer.
 
 http://lmdvr.r-forge.r-project.org/
 
-```{r, echo=TRUE}
+```{r}
 library(lattice)
 dotplot(prop.table(postdoc, margin = 1), groups = FALSE,
         xlab = "Proportion", par.strip.text = list(abbreviate = TRUE, minlength = 10))
@@ -451,7 +451,7 @@ Sarkar, D. (2008). *Lattice: Multivariate Data Visualization with R*, Springer.
 
 http://lmdvr.r-forge.r-project.org/
 
-```{r, echo=TRUE}
+```{r}
 library(lattice)
 dotplot(prop.table(postdoc, margin = 1), groups = FALSE,
         index.cond = function(x, y) median(x),
@@ -474,7 +474,7 @@ Sarkar, D. (2008). *Lattice: Multivariate Data Visualization with R*, Springer.
 
 http://lmdvr.r-forge.r-project.org/
 
-```{r, echo=TRUE}
+```{r}
 library(lattice)
 splom( ~ USArrests[c(1, 2, 4)] | state.region, pscales = 0,
        type = c("g", "p", "smooth"))
@@ -507,7 +507,7 @@ p5a; p5b
 
 Dalal, S. R., Fowlkes, E. B. and Hoadley, B. (1988). Risk analysis of the space shuttle: Pre-Challenger prediction of failure. *Journal of the American Statistical Association*, 84, 945--957.
 
-```{r, echo=TRUE}
+```{r}
 library(dplyr)
 orings <- read.table("data/orings.txt", header = TRUE)
 orings
@@ -516,7 +516,7 @@ orings123 <- orings %>% filter(NumInc > 0.5)
 
 \pagebreak
 
-```{r, echo=TRUE}
+```{r}
 library(ggplot2)
 
 xlab = expression("Calculated Joint Temperature " ( degree*F))
@@ -533,7 +533,7 @@ p3a
 
 ## Figure 2.39
 
-```{r, echo=TRUE}
+```{r}
 library(ggplot2)
 # using the complete data (compare with Fig. 2.38)
 p1 <- ggplot(orings, aes(x = TempF, y = NumIncJ))
