@@ -21,7 +21,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Table 3.1: Pulse Rates and Heights Data
 
-```{r BPRS data, echo=TRUE}
+```{r}
 heights <- c(160,167,162,175,185,162,173,167,170,170,163,158,157,
              160,170,177,166,170,148,175,160,153,185,165,165,172,
              185,163,177,165,182,162,172,177,168,178,182,167,170,
@@ -38,14 +38,14 @@ head(hp)
 
 ## Table 3.2
 
-```{r, echo=TRUE}
+```{r}
 summary(lm(pulse ~ heights))
 ```
 \pagebreak
 
 ## Figure 3.1
 
-```{r, echo=TRUE}
+```{r}
 # layout(matrix(c(2, 0, 1, 3), 2, 2, byrow=TRUE), c(2,1), c(1,2), TRUE)
 plot(pulse ~ heights, xlab = "Heights (cm)", ylab = "Pulse rate (bpm)")
 reg <- lm(pulse ~ heights)
@@ -70,7 +70,7 @@ boxplot(pulse, ylab = "Heights")
 \pagebreak
 
 ## Figure 3.5
-```{r, echo=TRUE}
+```{r}
 reg <- lm(pulse ~ heights)
 residuals <- reg$residuals
 fitval <- predict(reg)
@@ -89,7 +89,7 @@ title(sub="(d)")
 \pagebreak
 
 ## Figure 3.8 and Figure 3.10
-```{r, echo=TRUE}
+```{r}
 par(mfrow = c(1,1))
 plot(pulse ~ heights, xlab = "Height (cm)", ylab = "Pulse rate (bpm)")
 abline(lm(pulse ~ heights))
@@ -100,7 +100,7 @@ legend("topleft", c("Linear regression fit", "Lowess fit", "Spline fit"), lty=1:
 \pagebreak
 
 # Table 3.3: Data on Oxygen Uptake and Expired Volume
-```{r, echo=TRUE}
+```{r}
 # kinesiology data
 oxygen <- c(574,592,664,667,718,770,927,947,1020,1096,1277,1323,1330,1599,
             1639,1787,1790,1794,1874,2049,2132,2160,2292,2312,2475,2489,2490,2577,
@@ -117,7 +117,7 @@ head(oxyev)
 \pagebreak
 
 ## Figure 3.2
-```{r, echo=TRUE}
+```{r}
 plot(ev ~ oxygen, xlab = "Oxygen uptake", ylab = "Expired ventilation", 
      ylim = c(5,150), xlim = c(500,4500))
 abline(lm(ev ~ oxygen))
@@ -125,13 +125,13 @@ abline(lm(ev ~ oxygen))
 \pagebreak
 
 ## Table 3.4
-```{r, echo=TRUE}
+```{r}
 summary(lm(ev ~ oxygen))
 ```
 \pagebreak
 
 ## Figure 3.3
-```{r, echo=TRUE}
+```{r}
 plot(ev ~ oxygen, xlab = "Oxygen uptake", ylab = "Expired ventilation",
      ylim = c(5,150), xlim = c(500,4500))
 o2 <- oxygen*oxygen
@@ -141,13 +141,13 @@ lines(oxygen, reg$fit)
 \pagebreak
 
 ## Table 3.5
-```{r, echo=TRUE}
+```{r}
 summary(reg)
 ```
 \pagebreak
 
 ## Figure 3.6
-```{r, echo=TRUE}
+```{r}
 reg <- lm(ev ~ oxygen)
 residuals <- reg$residuals
 fitval <- predict(reg)
@@ -166,7 +166,7 @@ title(sub="(d)")
 \pagebreak
 
 ## Figure 3.7
-```{r, echo=TRUE}
+```{r}
 o2 <- oxygen*oxygen
 reg <- lm(ev ~ oxygen + o2)
 residuals <- reg$residuals
@@ -186,12 +186,12 @@ title(sub="(d)")
 \pagebreak
 
 # Table 3.6: Data of Challenger Vote and Perot Vote
-```{r, echo=TRUE}
+```{r}
 vote <- read.table("data/vote.txt", sep = "\t", header = TRUE)
 head(vote)
 ```
 ## Figure 3.11 and Figure 3.13
-```{r, echo=TRUE}
+```{r}
 attach(vote)
 par(mfrow = c(1,1))
 plot(chall ~ perot, xlab = "Vote for Perot (%)", ylab = "Challenger's vote share (%)",
@@ -203,7 +203,7 @@ legend("topright", c("Linear Fit", "Lowess fit", "Spline fit"), lty=1:3)
 detach(vote)
 ```
 ## Figure 3.12
-```{r, echo=TRUE}
+```{r}
 attach(vote)
 reg <- lm(chall ~ perot)
 residuals <- reg$residuals
