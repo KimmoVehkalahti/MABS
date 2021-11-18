@@ -80,9 +80,8 @@ p6
 ## Figure 8.3
 
 ```{r}
-# Number of weeks, baseline (week 0) included:
-n <- BPRSL$week %>% unique() %>% length()
-
+# Number of subjects: (would be better to have unique IDs...)
+n <- 40
 # Make a summary data:
 BPRSS <- BPRSL %>%
   group_by(treatment, week) %>%
