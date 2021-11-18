@@ -80,8 +80,8 @@ p6
 ## Figure 8.3
 
 ```{r}
-# Number of subjects: (would be better to have unique IDs...)
-n <- 40
+# Number of subjects (per group):
+n <- 20
 # Make a summary data:
 BPRSS <- BPRSL %>%
   group_by(treatment, week) %>%
