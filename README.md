@@ -1,12 +1,12 @@
 MABS = **Multivariate Analysis for the Behavioral Sciences**, Second Edition
 
-https://www.crcpress.com/Multivariate-Analysis-for-the-Behavioral-Sciences-Second-Edition/Vehkalahti-Everitt/p/book/9780815385158
+[Book website](https://www.crcpress.com/Multivariate-Analysis-for-the-Behavioral-Sciences-Second-Edition/Vehkalahti-Everitt/p/book/9780815385158)
 
-Textbook (ca. 400 pp.) for students, practioners, teachers, reseachers, etc.
+Textbook (415 pp.) for students, practioners, teachers, reseachers, etc.
 
-Authored by **Kimmo Vehkalahti** and **Brian S. Everitt**
+Authored by **Kimmo Vehkalahti** (Helsinki, Finland) and **Brian S. Everitt** (London, UK).
 
-Published by Chapman & Hall/CRC Press (Taylor & Francis) in early 2019
+Published by Chapman & Hall/CRC Press (Taylor & Francis) in 2019.
 
-GitHub repository will include R codes and data sets for examples and exercises.
+GitHub repository includes R codes and data sets for the examples and exercises.
 
